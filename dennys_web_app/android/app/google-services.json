@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "298903489962",
+    "project_id": "dennys-app",
+    "storage_bucket": "dennys-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298903489962:android:bd34aeda851448f2606fd3",
+        "android_client_info": {
+          "package_name": "com.example.dennys_web_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298903489962-er5ql8ke1tfo3ccgund3oh3236rclfk2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9F6yr7xdDedPVY5F8t8A-591vTvW0FdI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298903489962-er5ql8ke1tfo3ccgund3oh3236rclfk2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
