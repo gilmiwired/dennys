@@ -29,6 +29,13 @@
             {
               "client_id": "298903489962-er5ql8ke1tfo3ccgund3oh3236rclfk2.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "298903489962-keba2c7mp2o2eji7b14faanom6o7pgv8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dennysWebApp"
+              }
             }
           ]
         }
