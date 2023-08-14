@@ -6,17 +6,17 @@
 chatGPT APIのテストで作ったやつ
 参考までにslackとAWS間のやり取りで使ってる技術はwebhookっていうやつ
 
-
 ## データベース関連
-
 
 ### DB構造
 
-treeとtaskは生成、それを元にサーバー側で各contentを作成
-<br> →　プロンプト削減のため
-<br>主に表示するのはtreeと各タイトルのみ
-<br>content作成はtitle,children,statusを作る
-<br>UI上で各タスクに触れた時にdescription==nullだったら説明作成&DBのdescription更新とかにすればプロンプト減らせる...かな
+データベースについては**Firebase**ってやつ使う予定でいじってます。
+
+treeとtaskは生成、それを元にサーバー側で各contentを作成<br> 
+→　プロンプト削減のため<br>
+主に表示するのはtreeと各タイトルのみ<br>
+content作成はtitle,children,statusを作る<br>
+UI上で各タスクに触れた時にdescription==nullだったら説明作成&DBのdescription更新とかにすればプロンプト減らせる...かな
 
 
 #### DB例
@@ -30,7 +30,6 @@ user_ID/
    ├── ID2
    └── ...
 ```
-
 <br>
 
 
@@ -47,7 +46,6 @@ tree = [
     [6, [17, 18]]
 ]
 ```
-
 <br>
 
 #### tasks例
@@ -92,3 +90,13 @@ ID2 = {
     "description": "説明"
 }
 ```
+
+
+## 環境について
+
+とりあえず初期はwebアプリ想定<br>
+俺ちゃんの環境はこれ<br><br>
+Flutter 3.3.4 • channel stable • https://github.com/flutter/flutter.git<br>
+Framework • revision eb6d86ee27 (10 months ago) • 2022-10-04 22:31:45 -0700<br>
+Engine • revision c08d7d5efc<br>
+Tools • Dart 2.18.2 • DevTools 2.15.0
