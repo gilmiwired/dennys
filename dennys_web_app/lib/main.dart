@@ -1,5 +1,5 @@
+import 'package:dennys_web_app/Manual/Manual_Registration.dart';
 import 'package:flutter/material.dart';
-import 'data_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -12,16 +12,16 @@ void main() async {
 }
 
 class App extends StatelessWidget {
-    final DataService dataService = DataService();
+    final ManualResist dataService = ManualResist();
     @override
     Widget build(BuildContext context) {
         return MaterialApp(
             home: Scaffold(
-                appBar: AppBar(title: Text('Firestore Save Data')),
+                appBar: AppBar(title: const Text('Firestore Save Data')),
                 body: Center(
                     child: ElevatedButton(
                         onPressed: dataService.saveToFirestore,
-                        child: Text('Save Data to Firestore'),
+                        child: const Text('Save Data to Firestore'),
                     ),
                 ),
             ),
