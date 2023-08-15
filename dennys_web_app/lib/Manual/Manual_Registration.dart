@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dennys_web_app/log/logger.dart';
+import 'package:dennys_web_app/logger/logger.dart';
 
-class DataService {
+class ManualResist {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
     Future<void> saveToFirestore() async {
       final contentRef = firestore.collection('users').doc('user_ID').collection('content');
@@ -58,5 +58,6 @@ class DataService {
 
       logger.info(tree);
       logger.info(tasks);
+      logger.info("Registration Successful!");
     }
 }
