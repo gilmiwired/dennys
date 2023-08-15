@@ -20,12 +20,6 @@ class DefaultFirebaseOptions {
       return web;
     }
     switch (defaultTargetPlatform) {
-      case TargetPlatform.android:
-        return android;
-      case TargetPlatform.iOS:
-        return ios;
-      case TargetPlatform.macOS:
-        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -51,33 +45,5 @@ class DefaultFirebaseOptions {
     authDomain: 'dennys-app.firebaseapp.com',
     storageBucket: 'dennys-app.appspot.com',
     measurementId: 'G-1J6SCMYZFE',
-  );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA9F6yr7xdDedPVY5F8t8A-591vTvW0FdI',
-    appId: '1:298903489962:android:bd34aeda851448f2606fd3',
-    messagingSenderId: '298903489962',
-    projectId: 'dennys-app',
-    storageBucket: 'dennys-app.appspot.com',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDKT2Q5KoGrXh1E_BnWPXG3kmAoq-69VZM',
-    appId: '1:298903489962:ios:9ef3a175a656b9f7606fd3',
-    messagingSenderId: '298903489962',
-    projectId: 'dennys-app',
-    storageBucket: 'dennys-app.appspot.com',
-    iosClientId: '298903489962-keba2c7mp2o2eji7b14faanom6o7pgv8.apps.googleusercontent.com',
-    iosBundleId: 'com.example.dennysWebApp',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDKT2Q5KoGrXh1E_BnWPXG3kmAoq-69VZM',
-    appId: '1:298903489962:ios:9ef3a175a656b9f7606fd3',
-    messagingSenderId: '298903489962',
-    projectId: 'dennys-app',
-    storageBucket: 'dennys-app.appspot.com',
-    iosClientId: '298903489962-keba2c7mp2o2eji7b14faanom6o7pgv8.apps.googleusercontent.com',
-    iosBundleId: 'com.example.dennysWebApp',
   );
 }
