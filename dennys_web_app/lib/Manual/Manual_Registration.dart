@@ -4,20 +4,6 @@ import 'package:dennys_web_app/logger/logger.dart';
 class ManualResist {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> fetchUserData() async {
-    final userRef = firestore.collection('users').doc('user_ID');
-
-    // userドキュメントのデータを取得
-    DocumentSnapshot snapshot = await userRef.get();
-    if (!snapshot.exists) {
-      logger.warning("User data not found!");
-      //return {};
-    }
-
-    logger.info("Fetched user data: ${snapshot.data()}");
-    //return snapshot.data() as Map<String, dynamic>;
-  }
-
   Future<void> saveToFirestore() async {
     final contentRef =
         firestore.collection('users').doc('user_ID').collection('content');
@@ -72,5 +58,19 @@ class ManualResist {
     logger.info(tree);
     logger.info(tasks);
     logger.info("Registration Successful!");
+  }
+
+  Future<void> fetchUserData() async {
+    final userRef = firestore.collection('users').doc('user_ID');
+
+    // userドキュメントのデータを取得
+    DocumentSnapshot snapshot = await userRef.get();
+    if (!snapshot.exists) {
+      logger.warning("User data not found!");
+      //return {};
+    }
+
+    logger.info("Fetched user data: ${snapshot.data()}");
+    //return snapshot.data() as Map<String, dynamic>;
   }
 }
