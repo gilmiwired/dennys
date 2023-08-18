@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dennys_web_app/logger/logger.dart';
+import 'package:dennys_web_app/task_data_generator.dart'; // 新しく追加したインポート
 
 class ManualResist {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> saveToFirestore() async {
+    //データを保存する関数
     final contentRef =
         firestore.collection('users').doc('user_ID').collection('content');
     final userRef = firestore.collection('users').doc('user_ID');
@@ -38,22 +40,24 @@ class ManualResist {
       '15': 'BGM',
       '16': '効果音',
       '17': 'バグチェック',
-      '18': 'ユーザーテスト'
+      '18': 'ユーザーテスト',
     };
 
-    for (var entry in tree.entries) {
+    final taskData = generateTaskData(tree, tasks); //上記のデータを元にタスクデータを生成
+
+    for (var entry in taskData.entries) {
+      //タスクデータをFirestoreに保存
       final id = entry.key;
-      final children = entry.value;
-      await contentRef.doc('ID$id').set({
-        'title': tasks[id],
-        'children': children,
-        'status': "do",
-        'description': "説明"
-      });
-      logger.info(contentRef.doc);
+      final data = entry.value;
+      await contentRef.doc('ID$id').set(data); //ID1, ID2, ID3...という名前で保存
     }
 
-    await userRef.set({'tree': tree, 'tasks': tasks}, SetOptions(merge: true));
+    // user_ID ドキュメントに tree と tasks のデータを保存
+    await userRef.set({
+      //user_IDドキュメントにtreeとtasksのデータを保存
+      'tree': tree,
+      'tasks': tasks
+    }, SetOptions(merge: true));
 
     logger.info(tree);
     logger.info(tasks);
@@ -61,6 +65,8 @@ class ManualResist {
   }
 
   Future<void> fetchUserData() async {
+    //データを取得する関数
+
     final userRef = firestore.collection('users').doc('user_ID');
 
     // userドキュメントのデータを取得
