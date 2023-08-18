@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dennys_web_app/logger/logger.dart';
 
 class ManualResist {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
     Future<void> saveToFirestore() async {
       final contentRef = firestore.collection('users').doc('user_ID').collection('content');
       final userRef = firestore.collection('users').doc('user_ID');
@@ -60,4 +60,33 @@ class ManualResist {
       logger.info(tasks);
       logger.info("Registration Successful!");
     }
+
+    Future<void> fetchUserData() async {
+      final userRef = firestore.collection('users').doc('user_ID');
+
+      // userドキュメントのデータを取得
+      DocumentSnapshot snapshot = await userRef.get();
+      if (!snapshot.exists) {
+        logger.warning("User data not found!");
+        //return {};
+      }
+
+      logger.info("Fetched user data: ${snapshot.data()}");
+      //return snapshot.data() as Map<String, dynamic>;
+    }
+    /*
+    Future<Map<String, dynamic>> fetchUserData() async {
+      final userRef = firestore.collection('users').doc('user_ID');
+
+      // userドキュメントのデータを取得
+      DocumentSnapshot snapshot = await userRef.get();
+      if (!snapshot.exists) {
+        logger.warning("User data not found!");
+        return {};
+      }
+
+      logger.info("Fetched user data: ${snapshot.data()}");
+      return snapshot.data() as Map<String, dynamic>;
+    }
+    */
 }
