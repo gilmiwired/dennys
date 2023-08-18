@@ -100,3 +100,8 @@ Flutter 3.3.4 • channel stable • https://github.com/flutter/flutter.git<br>
 Framework • revision eb6d86ee27 (10 months ago) • 2022-10-04 22:31:45 -0700<br>
 Engine • revision c08d7d5efc<br>
 Tools • Dart 2.18.2 • DevTools 2.15.0
+
+## 8/18日に追加した機能
+ 
+
+Manual_Registration.dartでデータ登録する機能を追加
