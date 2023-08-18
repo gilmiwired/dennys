@@ -20,7 +20,7 @@ class App extends StatelessWidget {
                 appBar: AppBar(title: const Text('Firestore Save Data')),
                 body: Center(
                     child: ElevatedButton(
-                        onPressed: dataService.saveToFirestore,
+                        onPressed: () => dataService.fetchUserData(),
                         child: const Text('Save Data to Firestore'),
                     ),
                 ),
