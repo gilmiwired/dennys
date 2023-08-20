@@ -61,6 +61,9 @@ class ManualResist {
       logger.info("Registration Successful!");
     }
 
+
+    //Future<Map<String, dynamic>> fetchUserData() async {
+    // 返り血を用意する場合Map<String, dynamic>
     Future<void> fetchUserData() async {
       final userRef = firestore.collection('users').doc('user_ID');
 
@@ -74,19 +77,4 @@ class ManualResist {
       logger.info("Fetched user data: ${snapshot.data()}");
       //return snapshot.data() as Map<String, dynamic>;
     }
-    /*
-    Future<Map<String, dynamic>> fetchUserData() async {
-      final userRef = firestore.collection('users').doc('user_ID');
-
-      // userドキュメントのデータを取得
-      DocumentSnapshot snapshot = await userRef.get();
-      if (!snapshot.exists) {
-        logger.warning("User data not found!");
-        return {};
-      }
-
-      logger.info("Fetched user data: ${snapshot.data()}");
-      return snapshot.data() as Map<String, dynamic>;
-    }
-    */
 }
