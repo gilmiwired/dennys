@@ -5,13 +5,15 @@ import 'firebase_options.dart';
 
 void main() async {
     WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform
-    );
-    runApp(App());
+    await Firebase.initializeApp();
+    runApp(MyApp());
+
+    
 }
 
-class App extends StatelessWidget {
+
+
+class MyApp extends StatelessWidget {
     final ManualResist dataService = ManualResist();
     @override
     Widget build(BuildContext context) {
