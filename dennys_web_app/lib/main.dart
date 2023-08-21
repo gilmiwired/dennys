@@ -64,7 +64,8 @@ class MyApp extends StatelessWidget {
                                 tasks: tasks
                             );
                             var globalTree = GlobalTree.instance;
-                            // For demonstration purposes, print the sample node details in the console
+                            globalTree.printNodeList();
+                            GlobalTree.instance.collectAllChildNodes("2");
                             globalTree.printNodeList();
                             sample.display();
                         },
@@ -74,50 +75,4 @@ class MyApp extends StatelessWidget {
             ),
         );
     }
-}
-
-class GameTreeInitializer {
-    // Tree data
-    final Map<String, List<int>> tree = {
-        '1': [2, 3, 4, 5, 6],
-        '2': [7, 8, 9],
-        '3': [10, 11, 12],
-        '4': [13, 14],
-        '5': [15, 16],
-        '6': [17, 18]
-    };
-
-    // Tasks data
-    final Map<String, String> tasks = {
-        '1': 'ゲームを作る',
-        '2': 'デザイン',
-        '3': 'プログラム',
-        '4': 'グラフィックス',
-        '5': 'サウンド',
-        '6': 'テスト',
-        '7': 'コンセプト',
-        '8': 'キャラ・ストーリー',
-        '9': 'ルール・メカニクス',
-        '10': 'エンジン選択',
-        '11': 'キャラ動き',
-        '12': 'ロジック・AI',
-        '13': 'キャラ・背景アート',
-        '14': 'アニメーション',
-        '15': 'BGM',
-        '16': '効果音',
-        '17': 'バグチェック',
-        '18': 'ユーザーテスト'
-    };
-
-    /*Future<void> initialize() async {
-        // In case there's some async tasks in the future
-        GlobalTree globalTree = GlobalTree(
-            key: 'SomeUniqueKey',
-            tree: tree,
-            tasks: tasks
-        );
-
-        // Print node list
-        globalTree.printNodeList();
-    }*/
 }

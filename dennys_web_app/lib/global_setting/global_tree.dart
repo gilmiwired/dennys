@@ -32,6 +32,8 @@ class GlobalTree {
   final Map<String, List<int>> _tree;
   final Map<String, String> _tasks;
   final Map<String, Node> _nodeList = {};
+  final Set<String> _collectedChildNodes = {};
+
 
   // Singletonのインスタンスを取得するためのgetter
   static GlobalTree get instance {
@@ -70,7 +72,24 @@ class GlobalTree {
     }
   }
 
+  void collectAllChildNodes(String nodeKey) {
+    _collectedChildNodes.clear();
+    _gatherChildNodes(nodeKey);
+  }
+
+  void _gatherChildNodes(String nodeId) {
+    _collectedChildNodes.add(nodeId);
+    if (_tree.containsKey(nodeId)) {
+      for (int child in _tree[nodeId]!) {
+        _collectedChildNodes.add(child.toString());
+        print('Collected Node: $child');
+        _gatherChildNodes(child.toString());
+      }
+    }
+  }
+
   // Getter methods
+  Set<String> get collectedChildNodes => _collectedChildNodes;
   String get key => _key;
   Map<String, List<int>> get tree => _tree;
   Map<String, String> get tasks => _tasks;
@@ -82,8 +101,30 @@ class GlobalTree {
   }
 
   void printNodeList() {
-    _nodeList.forEach((key, node) {
-      logger.info('Key: $key, Node: $node');
-    });
+    print('--- Print Node List ---');
+
+    print('--- Tree ---');
+    for (var entry in _tree.entries) {
+      if (!_collectedChildNodes.contains(entry.key)) {
+        print('Key: ${entry.key}, Value: ${entry.value.join(', ')}');
+      }
+    }
+
+    print('--- Tasks ---');
+    for (var entry in _tasks.entries) {
+      if (!_collectedChildNodes.contains(entry.key)) {
+        print('Key: ${entry.key}, Value: ${entry.value}');
+      }
+    }
+
+    print('--- NodeList ---');
+    for (var entry in _nodeList.entries) {
+      if (!_collectedChildNodes.contains(entry.key)) {
+        print('Key: ${entry.key}, Value: ${entry.value.toString()}');
+      }
+    }
+
+    print('--- CollectedChildNodes ---');
+    print(_collectedChildNodes.join(', '));
   }
 }
