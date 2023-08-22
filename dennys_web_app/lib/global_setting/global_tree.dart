@@ -34,7 +34,6 @@ class GlobalTree {
   final Map<String, Node> _nodeList = {};
   final Set<String> _collectedChildNodes = {};
 
-
   // Singletonのインスタンスを取得するためのgetter
   static GlobalTree get instance {
     if (_singleton == null) {
@@ -101,36 +100,40 @@ class GlobalTree {
     //割り込みをする場合はtrueで呼び出す
     Node parentNode = _nodeList[
         parentID]!; //!を外すとvalue of type 'Node?' can't be assigned to a variable of type 'Node'.ってなる
-    String newID = 'NewID'; //新しいノードの取得は保留
-    int newIDNum = 1; //treeで使う新しいIDの数字
+    String newID = '19'; //新しいノードの取得は保留
+    int newIDNum = 19; //treeで使う新しいIDの数字
     // 新しいノードの作成
     Node newNode = Node(
         title: title,
-        children:
-            parentNode.children.isEmpty ? [] : [parentNode.children.first],
+        children: parentNode.children.isEmpty ? [] : parentNode.children,
         status: "do",
         description: "説明");
 
-    // nodeListに新しいノードを追加
     _nodeList[newID] = newNode;
 
     // tasksを更新
     _tasks[newID] = title;
 
     // treeを更新
-    if (parentNode.children.isEmpty) {
-      // 親ノードが子ノードを持っていない場合の処理
-      _tree[parentID] = [newIDNum];
-    } else if (insertAschild) {
-      // 新しいノードを親ノードの子ノードリストに追加する場合の処理(デフォルト)
-      parentNode.children.insert(0, newID);
-    } else {
+    List<String> updatedChildren = List.from(parentNode.children);
+    if (insertAschild) {
       // 新しいノードが元々の子ノードたちを子として持つ場合の処理(割り込み)
-      List<String> originalChildren = List.from(parentNode.children);
       _tree[parentID] = [newIDNum];
-      _tree[newID] = originalChildren.map((e) => int.parse(e)).toList();
-      newNode.children.addAll(originalChildren);
+      _tree[newID] = updatedChildren.map((e) => int.parse(e)).toList();
+      updatedChildren.insert(0, newID); //新しい子として割り込み
+    } else {
+      // 親ノードの子ノードとして追加する場合
+      _tree[parentID] = [newIDNum];
+      parentNode.children.insert(0, newID);
     }
+
+    // nodeListの更新
+    _nodeList[parentID] = Node(
+      title: parentNode.title,
+      children: updatedChildren,
+      status: parentNode.status,
+      description: parentNode.description,
+    );
   }
 
   // シングルトンのインスタンスをリセットするメソッド
