@@ -2,6 +2,10 @@ import 'package:dennys_web_app/Manual/Manual_Registration.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:dennys_web_app/logger/logger.dart';
+import 'package:dennys_web_app/login/login_page.dart';
+import 'package:dennys_web_app/register/registration_page.dart';
+import 'package:dennys_web_app/profile/user_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
 
@@ -12,6 +16,21 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+        return MaterialApp(
+            home: HomePage(),
+        );
+    }
+}
+
+class HomePage extends StatefulWidget {
+    @override
+    _HomePageState createState() => _HomePageState();
+}
+
+
+class _HomePageState extends State<HomePage> {
     final ManualResist dataService = ManualResist();
     final Node sample = Node(
         title: 'Sample Node Title',
@@ -56,20 +75,52 @@ class MyApp extends StatelessWidget {
             home: Scaffold(
                 appBar: AppBar(title: const Text('Firestore Save Data')),
                 body: Center(
-                    child: ElevatedButton(
-                        onPressed: () {
-                            GlobalTree.initialize(
-                                key: 'SomeUniqueKey',
-                                tree: tree,
-                                tasks: tasks
-                            );
-                            var globalTree = GlobalTree.instance;
-                            globalTree.printNodeList();
-                            GlobalTree.instance.collectAllChildNodes("2");
-                            globalTree.printNodeList();
-                            sample.display();
-                        },
-                        child: const Text('Save Data to Firestore'),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                    // ログイン状態を確認
+                                    User? currentUser = FirebaseAuth.instance
+                                        .currentUser;
+                                    /*
+                                    GlobalTree.initialize(
+                                        key: 'SomeUniqueKey',
+                                        tree: tree,
+                                        tasks: tasks
+                                    );
+                                    var globalTree = GlobalTree.instance;
+                                    globalTree.printNodeList();
+                                    GlobalTree.instance.collectAllChildNodes("2");
+                                    globalTree.printNodeList();
+                                    sample.display();
+                                    */
+                                    if (currentUser == null) {
+                                        // ログインしていない場合、ログインページに移動
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (context) => LoginPage()),
+                                        );
+                                    } else {
+                                        // ログインしている場合、UserModelページに移動
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (context) => UserModelPage(user: currentUser)),
+                                        );
+                                    }
+                                },
+                                child: const Text('Auth State'),
+                            ),
+                            SizedBox(height: 20),
+                            ElevatedButton(
+                                onPressed: () {
+                                    // 登録ページ
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(builder: (context) =>
+                                            RegistrationPage()),
+                                    );
+                                },
+                                child: const Text('Register'),
+                            ),
+                        ],
                     ),
                 ),
             ),
