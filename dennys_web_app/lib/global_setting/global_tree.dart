@@ -60,7 +60,8 @@ class GlobalTree {
 
     // NodeListを初期化
     for (var entry in tasks.entries) {
-      List<String> children = tree[entry.key]?.map((e) => e.toString()).toList() ?? [];
+      List<String> children =
+          tree[entry.key]?.map((e) => e.toString()).toList() ?? [];
       _singleton!._nodeList[entry.key] = Node(
         title: entry.value,
         children: children,
@@ -75,6 +76,43 @@ class GlobalTree {
   Map<String, List<int>> get tree => _tree;
   Map<String, String> get tasks => _tasks;
   Map<String, Node> get nodeList => _nodeList;
+
+  //ノードを追加するメソッド
+  void addNode(String title, String parentID, {bool insertAschild = false}) {
+    //割り込みをする場合はtrueで呼び出す
+    Node parentNode = _nodeList[
+        parentID]!; //!を外すとvalue of type 'Node?' can't be assigned to a variable of type 'Node'.ってなる
+    String newID = 'NewID'; //新しいノードの取得は保留
+    int newIDNum = 1; //treeで使う新しいIDの数字
+    // 新しいノードの作成
+    Node newNode = Node(
+        title: title,
+        children:
+            parentNode.children.isEmpty ? [] : [parentNode.children.first],
+        status: "do",
+        description: "説明");
+
+    // nodeListに新しいノードを追加
+    _nodeList[newID] = newNode;
+
+    // tasksを更新
+    _tasks[newID] = title;
+
+    // treeを更新
+    if (parentNode.children.isEmpty) {
+      // 親ノードが子ノードを持っていない場合の処理
+      _tree[parentID] = [newIDNum];
+    } else if (insertAschild) {
+      // 新しいノードを親ノードの子ノードリストに追加する場合の処理(デフォルト)
+      parentNode.children.insert(0, newID);
+    } else {
+      // 新しいノードが元々の子ノードたちを子として持つ場合の処理(割り込み)
+      List<String> originalChildren = List.from(parentNode.children);
+      _tree[parentID] = [newIDNum];
+      _tree[newID] = originalChildren.map((e) => int.parse(e)).toList();
+      newNode.children.addAll(originalChildren);
+    }
+  }
 
   // シングルトンのインスタンスをリセットするメソッド
   static void resetInstance() {
