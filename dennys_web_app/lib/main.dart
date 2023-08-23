@@ -33,13 +33,15 @@ class _MyHomePageState extends State<MyHomePage> {
       key: 'SomeUniqueKey',
       tree: {
         '1': [2, 3],
-        '2': [],
+        '2': [4, 5],
         '3': [],
       },
       tasks: {
         '1': 'Task 1',
         '2': 'Task 2',
         '3': 'Task 3',
+        '4': 'Task 4',
+        '5': 'Task 5',
       },
     );
   }
@@ -54,7 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ElevatedButton(
           onPressed: () {
             // ノードを追加
-            GlobalTree.instance.addNode("New Task", "2", insertAschild: true);
+            GlobalTree.instance.addNode("New Task", "2",
+                insertAschild: true, newChildren: ['4']);
 
             // 結果をコンソールに表示
             GlobalTree.instance.printNodeList();
