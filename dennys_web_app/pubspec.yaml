@@ -47,12 +47,17 @@ dependencies:
   firebase_auth: ^4.2.9
   firebase_core_web: ^2.6.0
 
+  # Model
+  freezed_annotation: ^2.1.0
+
+  #logs
   simple_logger: ^1.9.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  build_runner:
+  freezed:
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
