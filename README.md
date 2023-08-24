@@ -100,3 +100,59 @@ Flutter 3.3.4 • channel stable • https://github.com/flutter/flutter.git<br>
 Framework • revision eb6d86ee27 (10 months ago) • 2022-10-04 22:31:45 -0700<br>
 Engine • revision c08d7d5efc<br>
 Tools • Dart 2.18.2 • DevTools 2.15.0
+
+## 8/18日に追加した機能
+ 
+
+Manual_Registration.dartでデータ登録する機能を追加しました。<br>
+登録したデータはFirebaseに保存されます。<br>
+<br>
+Manual_Registration.dartの画面は以下のようになっています。<br>
+
+登録したいデータを入力して、登録ボタンを押すと、Firebaseにデータが保存されます。
+
+---
+### task_data_generator.dartについて
+
+treeとtaskを基にID1~Nを生成するやつ<br>
+<br>
+treeとtaskは手動で入力する必要があるけど今後どうするかは未定<br>
+<br>
+
+
+```
+ID1 = {
+    "title": "ゲームを作る",
+    "children": [2, 3, 4, 5, 6],
+    "status": "do",
+    "description": "説明"
+}
+
+ID2 = {
+    "title": "デザイン",
+    "children": [7, 8, 9],
+    "status": "done",
+    "description": "説明"
+}
+
+ID3 = {
+    "title": "プログラム",
+    "children": [10, 11, 12],
+    "status": "do",
+    "description": "説明"
+}
+
+以下省略
+```
+<br>
+<br>
+ID1~Nを生成したら、Manual_Registration.dartでデータ登録する機能を使って、Firebaseにデータを登録する<br>
+<br>
+<br>
+
+---
+## 細かな変更
+
+widget_test.dartにおける16行目くらいのMyAppって書かれてたやつを、constを消してAppに変更した。<br>
+<br>
+
