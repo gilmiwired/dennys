@@ -109,11 +109,12 @@ class GlobalTree {
     String newID = newIDNum.toString();
 
     // 新しいノードの作成
-    List<String> childrenForNewNode = newChildren ?? [];
     Node newNode = Node(
         title: title,
         parentID: parentID,
-        children: childrenForNewNode, //親ノードの子ノードを子として持つ
+        children: parentNode.children.isEmpty
+            ? []
+            : parentNode.children, //親ノードの子ノードを子として持つ
         status: "do",
         description: "説明");
 
@@ -125,17 +126,17 @@ class GlobalTree {
     //親ノードの子ノードのリストを取得
     List<String> updatedChildren =
         List.from(parentNode.children); //親ノードの子リストのコピーを作成
-    if (newChildren != null) {
-      for (String child in newChildren) {
-        updatedChildren.remove(child); //親ノードの子ノードのリストから新しいノードの子ノードを削除
-      }
+    if (insertAschild) {
+      //割り込み
+      updatedChildren = [newID];
+    } else {
+      updatedChildren.insert(0, newID); //親の子リストに新しいノードを追加
     }
-
-    updatedChildren.insert(0, newID); //親の子リストに新しいノードを追加
 
     _nodeList[newID] = newNode; // nodeListに新しいノードを追加
     _nodeList[parentID] = Node(
       //親ノードの更新
+      //親ノードの子ノードのリストを更新
       title: parentNode.title,
       parentID: parentNode.parentID,
       children: updatedChildren, //先ほど更新した子ノードのリストをセット
@@ -144,6 +145,7 @@ class GlobalTree {
     );
     //新しいノードの子ノードのparentIDを更新
     if (newChildren != null) {
+      //新しいノードの子ノードがある場合
       for (String child in newChildren) {
         _nodeList[child] = Node(
           title: _nodeList[child]!.title,
