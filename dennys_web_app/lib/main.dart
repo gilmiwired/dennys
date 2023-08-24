@@ -1,4 +1,3 @@
-import 'package:dennys_web_app/Manual/Manual_Registration.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:dennys_web_app/logger/logger.dart';
@@ -9,16 +8,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
 
-void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    runApp(MyApp());
+void main() {
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return MaterialApp(
+                  title: 'Node Addition Test',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
             home: HomePage(),
         );
     }
@@ -38,36 +39,31 @@ class _HomePageState extends State<HomePage> {
         status: 'InProgress',
         description: 'This is a description for the sample node.',
     );
-    final Map<String, List<int>> tree = {
-        '1': [2, 3, 4, 5, 6],
-        '2': [7, 8, 9],
-        '3': [10, 11, 12],
-        '4': [13, 14],
-        '5': [15, 16],
-        '6': [17, 18]
-    };
+  }
+}
 
-    // Tasks data
-    final Map<String, String> tasks = {
-        '1': 'ゲームを作る',
-        '2': 'デザイン',
-        '3': 'プログラム',
-        '4': 'グラフィックス',
-        '5': 'サウンド',
-        '6': 'テスト',
-        '7': 'コンセプト',
-        '8': 'キャラ・ストーリー',
-        '9': 'ルール・メカニクス',
-        '10': 'エンジン選択',
-        '11': 'キャラ動き',
-        '12': 'ロジック・AI',
-        '13': 'キャラ・背景アート',
-        '14': 'アニメーション',
-        '15': 'BGM',
-        '16': '効果音',
-        '17': 'バグチェック',
-        '18': 'ユーザーテスト'
-    };
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // GlobalTreeの初期化
+    GlobalTree.initialize(
+      key: 'SomeUniqueKey',
+      tree: {
+        '1': [2, 3],
+        '2': [4, 5],
+        '3': [],
+      },
+      tasks: {
+        '1': 'Task 1',
+        '2': 'Task 2',
+        '3': 'Task 3',
+        '4': 'Task 4',
+        '5': 'Task 5',
+      },
+    );
+  }
 
     @override
     Widget build(BuildContext context) {
@@ -114,8 +110,7 @@ class _HomePageState extends State<HomePage> {
                                 onPressed: () {
                                     // 登録ページ
                                     Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) =>
-                                            RegistrationPage()),
+                                        MaterialPageRoute(builder: (context) => RegistrationPage()),
                                     );
                                 },
                                 child: const Text('Register'),
