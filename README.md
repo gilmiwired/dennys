@@ -6,6 +6,25 @@
 chatGPT APIのテストで作ったやつ
 参考までにslackとAWS間のやり取りで使ってる技術はwebhookっていうやつ
 
+## コードリスト
+
+### ログイン関連
+[login/login_page.dart](dennys_web_app/lib/login/login_page.dart) : ログイン(すでにアカウントが存在する場合)
+
+[regisiter/registration_page.dart](dennys_web_app/lib/register/registration_page.dart) : アカウント登録ページ(アカウントが存在しない場合)
+
+動きとしてはviewを現在表示してるページとして
+```
+////// main_page //////
+
+view <- (isAuth) ? 通常ページ : login_page
+
+////// login_page //////
+
+view <- (hasAccount) ? login_page : registration_page
+
+```
+
 ## データベース関連
 
 ### DB構造
