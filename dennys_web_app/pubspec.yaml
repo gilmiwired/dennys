@@ -53,6 +53,11 @@ dependencies:
   #logs
   simple_logger: ^1.9.0
 
+  #gpt
+  http: ^1.1.0
+  dart_openai: ^4.0.0
+  flutter_dotenv: ^5.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,7 +75,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+      - .env.example
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
