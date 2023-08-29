@@ -42,7 +42,7 @@ class _View_Tree extends State<View_Tree> {
   @override
   Widget build(BuildContext context) {
     GlobalTree.initialize(
-        key: 'SomeUniqueKey',
+        title: 'SomeUniqueKey',
         tree: tree,
         tasks: tasks
     );
