@@ -14,7 +14,7 @@ class UserModelPage extends StatefulWidget {
 }
 
 class _UserModelPageState extends State<UserModelPage> {
-  //final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _titleController = TextEditingController();
 
   @override
