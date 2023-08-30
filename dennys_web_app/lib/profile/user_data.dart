@@ -2,57 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dennys_web_app/login/login_page.dart';
+import 'package:dennys_web_app/global_setting/global_tree.dart';
 
-
-class UserModelPage extends StatelessWidget {
+class UserModelPage extends StatefulWidget {
   final User user;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   UserModelPage({required this.user});
 
-  Future<void> addTestDataToFirestore(User user) async {
-    try {
-      // ユーザのドキュメントにtreeとtasksのサブコレクションを追加
-      await _firestore.collection('users').doc(user.uid).collection('tree').add({
-        'data': tree,
-      });
-      await _firestore.collection('users').doc(user.uid).collection('tasks').add({
-        'data': tasks,
-      });
-    } catch (e) {
-      print(e);
-    }
+  @override
+  _UserModelPageState createState() => _UserModelPageState();
+}
+
+class _UserModelPageState extends State<UserModelPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController _titleController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
   }
 
-  final Map<String, List<int>> tree = {
-    '1': [2, 3, 4, 5, 6],
-    '2': [7, 8, 9],
-    '3': [10, 11, 12],
-    '4': [13, 14],
-    '5': [15, 16],
-    '6': [17, 18]
-  };
-
-  final Map<String, String> tasks = {
-    '1': 'ゲームを作る',
-    '2': 'デザイン',
-    '3': 'プログラム',
-    '4': 'グラフィックス',
-    '5': 'サウンド',
-    '6': 'テスト',
-    '7': 'コンセプト',
-    '8': 'キャラ・ストーリー',
-    '9': 'ルール・メカニクス',
-    '10': 'エンジン選択',
-    '11': 'キャラ動き',
-    '12': 'ロジック・AI',
-    '13': 'キャラ・背景アート',
-    '14': 'アニメーション',
-    '15': 'BGM',
-    '16': '効果音',
-    '17': 'バグチェック',
-    '18': 'ユーザーテスト'
-  };
+  final Map<String, List<int>> tree = {/* tree data here */};
+  final Map<String, String> tasks = {/* tasks data here */};
 
   @override
   Widget build(BuildContext context) {
@@ -75,18 +47,31 @@ class UserModelPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (user.photoURL != null)
+            if (widget.user.photoURL != null)
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(user.photoURL!),
+                backgroundImage: NetworkImage(widget.user.photoURL!),
               ),
             SizedBox(height: 10),
-            Text('Name: ${user.displayName ?? 'N/A'}'),
-            Text('Email: ${user.email ?? 'N/A'}'),
+            Text('Name: ${widget.user.displayName ?? 'N/A'}'),
+            Text('Email: ${widget.user.email ?? 'N/A'}'),
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                hintText: 'Enter title here',
+              ),
+            ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                await addTestDataToFirestore(user);
+                String title = _titleController.text;
+                GlobalTree.initialize(
+                    title: title,
+                    tree: tree,
+                    tasks: tasks
+                );
+                var globalTree = GlobalTree.instance;
+                await globalTree.addDataToFirestore(widget.user);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Data added successfully!')),
                 );
