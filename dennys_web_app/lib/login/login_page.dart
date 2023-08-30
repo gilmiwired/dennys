@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dennys_web_app/profile/user_model.dart';
+import 'package:dennys_web_app/register/registration_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -76,6 +77,14 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: _login,
                 child: Text('Login'),
               ),
+              SizedBox(height: 16),  // 新しく追加
+              TextButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
+                },
+                child: Text('アカウントがない場合はこちら'),
+              ),
+
             ],
           ),
         ),
