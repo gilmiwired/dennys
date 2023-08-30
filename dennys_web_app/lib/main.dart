@@ -5,6 +5,8 @@ import 'package:dennys_web_app/register/registration_page.dart';
 import 'package:dennys_web_app/profile/user_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'package:dennys_web_app/game/test_game.dart';
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -69,10 +71,10 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 // Navigate to registration page
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => RegistrationPage()),
+                  MaterialPageRoute(builder: (context) => BuildGame()),
                 );
               },
-              child: const Text('Register'),
+              child: const Text('Game'),
             ),
           ],
         ),
