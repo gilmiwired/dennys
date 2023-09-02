@@ -36,7 +36,7 @@ Map<String, dynamic> extractTaskTree(String aiResponse) {
 
 Future<Map<String, dynamic>> generateTaskTree(String userGoal) async {
   //userGoalに対するAIの応答を返す。（今のところは固定でtree,tasks生成のみ。そのうちフィードバックとかできるようにする。）
-  await dotenv.load(fileName: '.env.example');
+  await dotenv.load(fileName: '.env');
   OpenAI.apiKey = dotenv.get('OPEN_AI_API_KEY');
 
   final messages = [
