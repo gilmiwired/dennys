@@ -4,53 +4,72 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dennys_web_app/logger/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dennys_web_app/login/login_page.dart';
 import 'dart:math';
 
 class Node {
   final String title;
-  final String parent;
-  final List<String> children;
+  late final Node? parent;
+  late final List<Node>? children;
   final String status;
   final String description;
   int x = 0;
   int y = 0;
+  int rank = 0;
 
   Node({
     required this.title,
-    required this.parent,
+    this.parent,
     required this.children,
     required this.status,
     required this.description,
-  });
+  }) {
+    // Initialize rank based on parent
+    rank = (parent != null) ? parent!.rank + 1 : 0;
+  }
 
   void display() {
     logger.info('Title: $title');
-    logger.info('Parent: $parent');
-    logger.info('Children: $children');
+    logger.info('Parent: ${parent?.title ?? "None"}');
+    logger.info('Children: ${children?.map((e) => e.title).toList()}');
     logger.info('Status: $status');
     logger.info('Description: $description');
   }
 
   @override
   String toString() {
-    return 'Title: $title, Parent:$parent, Children: $children, Status: $status, Description: $description';
-  }
-}
-
-class Edge {
-  final String parent;
-  final String child;
-
-  Edge({required this.parent, required this.child});
-
-  @override
-  String toString() {
-    return 'Parent: $parent, Child: $child';
+    return 'Title: $title, Parent:${parent?.title ?? "None"}, Children: ${children?.map((e) => e.title).toList()}, Status: $status, Description: $description';
   }
 }
 
 
+class GlobalTree {
+  static GlobalTree? _singleton;
+  final String _title;
+  final Map<String, List<int>> _tree;
+  final Map<String, String> _tasks;
+  final Map<String, Node> _nodeList = {};
+  final Set<String> _collectedChildNodes = {};
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  //9/2以降追加分
+
+  int nodeWidth = 12;
+  int nodeHeight = 9;
+  int horizontalSpacing = 5;
+  int verticalSpacing = 5;
+  int additionalParentChildDistance = 10;
+  int veryExtendedMapWidth = 0;
+  int maxMapWidth =100;
+
+  Map<int, int> lowestY = {};
+
+  // Singletonのインスタンスを取得するためのgetter
+  static GlobalTree get instance {
+    if (_singleton == null) {
+      throw Exception("GlobalTree is not initialized. Call initialize first.");
+    }
+    return _singleton!;
+  }
   // プライベートコンストラクタ
   GlobalTree._internal({
     required String title,
@@ -95,22 +114,34 @@ class Edge {
   }
 
   static void _populateNodeListAndEdges() {
-    // NodeListとEdgeを初期化
+    // First, create all Node objects without setting their children
     for (var entry in _singleton!._tasks.entries) {
-      List<String> children =
-          _singleton!._tree[entry.key]?.map((e) => e.toString()).toList() ?? [];
       _singleton!._nodeList[entry.key] = Node(
         title: entry.value,
-        parent: entry.key,
-        children: children,
+        parent: null,  // Set parent to null initially
+        children: [],  // Initialize children as an empty list
         status: "do",
-        description: "説明",
+        description: "des",
       );
+    }
 
-      // Edgeを初期化
-      for (var child in children) {
-        _singleton!._edges.add(Edge(parent: entry.key, child: child));
+    // Now set the parent-child relationships
+    for (var entry in _singleton!._tasks.entries) {
+      Node parentNode = _singleton!._nodeList[entry.key]!;  // Retrieve the parent Node
+      List<Node> childrenNodes = [];  // To store the children Nodes
+
+      List<String>? childrenKeys = _singleton!._tree[entry.key]?.map((e) => e.toString()).toList();
+      if (childrenKeys != null) {
+        for (var childKey in childrenKeys) {
+          Node? childNode = _singleton!._nodeList[childKey];  // Retrieve the child Node
+          if (childNode != null) {
+            childrenNodes.add(childNode);
+            childNode.parent = parentNode;  // Set the parent of the child Node
+          }
+        }
       }
+
+      parentNode.children = childrenNodes;  // Set the children of the parent Node
     }
   }
 
@@ -120,64 +151,48 @@ class Edge {
   Map<String, List<int>> get tree => _tree;
   Map<String, String> get tasks => _tasks;
   Map<String, Node> get nodeList => _nodeList;
-  List<Edge> get edges => _edges;
 
-  //ノードを追加するメソッド
-  void addNode(String title, String parent, {bool insertAschild = false, List<String>? newChildren}) {
-    Node parentNode = _nodeList[parent]!; //親ノードの情報を取得(親ノードのchildrenを更新するため)
+  void addNode(String title, String parentID, {bool insertAsChild = false, List<String>? newChildrenIDs}) {
+    Node? parentNode = _nodeList[parentID];
+    if (parentNode == null) {
+      // Handle error: parent node not found
+      return;
+    }
 
-    //tasksの最後尾のキーにインクリメントして新しいIDを生成
     int newIDNum = int.parse(_tasks.keys.last) + 1;
     String newID = newIDNum.toString();
 
-    // 新しいノードの作成
-    List<String> childrenForNewNode = newChildren ?? [];
+    List<Node> childrenForNewNode = newChildrenIDs?.map((id) => _nodeList[id]!).toList() ?? [];
     Node newNode = Node(
         title: title,
-        parent: parent,
-        children: childrenForNewNode, //親ノードの子ノードを子として持つ
+        parent: parentNode,
+        children: childrenForNewNode,
         status: "do",
-        description: "説明");
+        description: "dec");
 
-    // tasksを更新
     _tasks[newID] = title;
 
-    // nodeListの更新
-
-    //親ノードの子ノードのリストを取得
-    List<String> updatedChildren =
-        List.from(parentNode.children); //親ノードの子リストのコピーを作成
-    if (newChildren != null) {
-      for (String child in newChildren) {
-        updatedChildren.remove(child); //親ノードの子ノードのリストから新しいノードの子ノードを削除
-      }
+    List<Node> updatedChildren = List.from(parentNode.children ?? []);
+    if (newChildrenIDs != null) {
+      updatedChildren.removeWhere((child) => newChildrenIDs.contains(child.title));
     }
 
-    updatedChildren.insert(0, newID); //親の子リストに新しいノードを追加
+    updatedChildren.insert(0, newNode);
+    _nodeList[newID] = newNode;
 
-    _nodeList[newID] = newNode; // nodeListに新しいノードを追加
-    _nodeList[parent] = Node(
-      //親ノードの更新
-      title: parentNode.title,
-      parent: parentNode.parent,
-      children: updatedChildren, //先ほど更新した子ノードのリストをセット
-      status: parentNode.status,
-      description: parentNode.description,
-    );
-    //新しいノードの子ノードのparentを更新
-    if (newChildren != null) {
-      for (String child in newChildren) {
-        _nodeList[child] = Node(
-          title: _nodeList[child]!.title,
-          parent: newID,
-          children: _nodeList[child]!.children,
-          status: _nodeList[child]!.status,
-          description: _nodeList[child]!.description,
-        );
+    parentNode.children = updatedChildren;
+
+    if (newChildrenIDs != null) {
+      for (String childID in newChildrenIDs) {
+        Node? childNode = _nodeList[childID];
+        if (childNode != null) {
+          childNode.parent = newNode;
+        }
       }
     }
   }
 
+  //追加ツリー
   static Map<String, dynamic> extractTaskTree(String aiResponse) {
     //応答をtree,tasksに整理
     String validJsonString =
@@ -207,14 +222,14 @@ class Edge {
       return {};
     }
   }
-
+  //ツリー生成
   static Future<Map<String, dynamic>> generateTaskTree(String userGoal) async {
     //userGoalに対するAIの応答を返す。（今のところは固定でtree,tasks生成のみ。そのうちフィードバックとかできるようにする。）
     await dotenv.load(fileName: '.env');
     OpenAI.apiKey = dotenv.get('OPEN_AI_API_KEY');
 
     final messages = [
-      OpenAIChatCompletionChoiceMessageModel(
+      const OpenAIChatCompletionChoiceMessageModel(
         content:
             "You are a task planner. The 'tree' represents the hierarchical structure of tasks where each key is a task ID and its corresponding value is a list of subtask IDs. The 'tasks' provides detailed descriptions for each task ID. Based on the user's goal, generate a task tree with both 'tree' and 'tasks'. If possible, generate at least 10 tasks, making sure that the tasks are MECE and that the level below the tree provides specific actions to guide the user toward the goal.The response should be structured as follows: {'tree': {'1': ['2', '3',...], '2': ['4', '5',...], '3': [],...}, 'tasks': {'1': 'Goal description', '2': 'Subtask 1 description',...}}. Ensure that the information is provided in a single line without any line breaks.Response in japanese. Exclude all other explanations.",
         role: OpenAIChatMessageRole.system,
@@ -279,6 +294,226 @@ class Edge {
     }
   }
 
+  Future<void> addDataToFirestore(User user) async {
+    try {
+      // タイトルが既に存在するか確認
+      QuerySnapshot snapshot = await _firestore.collection('users').doc(user.uid).collection('titles')
+          .where('title', isEqualTo: title)
+          .get();
+
+      // タイトルが存在しない場合のみ追加
+      if (snapshot.docs.isEmpty) {
+        // タイトル用の新しいドキュメントを作成
+        DocumentReference titleRef = _firestore.collection('users').doc(user.uid).collection(title).doc('info');
+
+        await titleRef.set({
+          'title': title,
+        });
+
+        // そのドキュメント内にtasksとtreeサブコレクションを追加
+        await _firestore.collection('users').doc(user.uid).collection(title).doc('tasks').set({
+          'data': tasks,
+        });
+
+        await _firestore.collection('users').doc(user.uid).collection(title).doc('tree').set({
+          'data': tree,
+        });
+
+      } else {
+        print('Title already exists.');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  
+  //コンソールにノード表示
+  void printNodeList() {
+    print('--- Print Node List ---');
+
+    print('--- Tree ---');
+    for (var entry in _tree.entries) {
+      if (!_collectedChildNodes.contains(entry.key)) {
+        print('Key: ${entry.key}, Value: ${entry.value.join(', ')}');
+      }
+    }
+
+    print('--- Tasks ---');
+    for (var entry in _tasks.entries) {
+      if (!_collectedChildNodes.contains(entry.key)) {
+        print('Key: ${entry.key}, Value: ${entry.value}');
+      }
+    }
+
+    print('--- NodeList ---');
+    for (var entry in _nodeList.entries) {
+      if (!_collectedChildNodes.contains(entry.key)) {
+        print('Key: ${entry.key}, Value: ${entry.value.toString()}');
+      }
+    }
+
+    print('--- CollectedChildNodes ---');
+    print(_collectedChildNodes.join(', '));
+  }
+
+  //座標割り当て関数
+  void assign_Coordinates(Node node) {
+    if (node.children == null || node.children!.isEmpty) { // Leaf node
+      node.y = max(0, lowestY[node.rank] ?? 0);
+      node.x = max(0, maxMapWidth - (node.rank * (nodeWidth + horizontalSpacing)));
+      lowestY[node.rank] = max(0, (lowestY[node.rank] ?? 0) + nodeHeight + verticalSpacing);
+      return;
+    }
+
+    // First, assign coordinates to the children
+    if (node.children != null) {
+      for (Node child in node.children!) {
+        assign_Coordinates(child);
+      }
+    }
+
+    // Calculate the new y-coordinate for the node based on its children
+    int avgChildY = node.children!.fold(0, (int prev, Node child) => prev + child.y + nodeHeight ~/ 2) ~/ node.children!.length;
+    node.y = max(0, avgChildY - nodeHeight ~/ 2);
+    node.x = max(0, maxMapWidth - (node.rank * (nodeWidth + horizontalSpacing)));
+
+    // Update the lowestY values to prevent overlap with other subtrees
+    int totalSubtreeHeight = subtreeHeight(node);
+    lowestY[node.rank] = max(lowestY[node.rank] ?? 0, node.y + totalSubtreeHeight);
+  }
+  //割り当てで使うやつ
+  int subtreeHeight(Node node) {
+    if (node.children!.isEmpty) {
+      return nodeHeight + verticalSpacing;
+    }
+    return node.children!.map((child) => subtreeHeight(child)).reduce((a, b) => a + b);
+  }
+}
+
+
+/*
+class Edge {
+  final String parent;
+  final String child;
+
+  Edge({required this.parent, required this.child});
+
+  @override
+  String toString() {
+    return 'Parent: $parent, Child: $child';
+  }
+}
+*/
+
+// ノードの幅と高さ、およびノード間のギャップ
+//final int nodeWidth = 100;
+//final int nodeHeight = 10;
+//final int horizontalGap = 100;
+//final int verticalGap = 50;
+
+// 最大幅と最大高さ
+/*
+  int maxWidth = 0;
+  int maxHeight = 0;
+  int angleOffset =4;
+  int distanceStep=4;
+*/
+
+
+/*
+  //座標割り当て関数
+  //(9/2)
+  void assign_Coordinates(Node node, Map<int, int> lowestY){
+      if (node.children.isEmpty) { // Leaf node
+        node.y = max(0, lowestY[node.rank] ?? 0);
+        node.x = max(0, maxMapWidth - (node.rank * (nodeWidth + horizontalSpacing)));
+        lowestY[node.rank] = max(0, (lowestY[node.rank] ?? 0) + nodeHeight + verticalSpacing);
+        return;
+      }
+
+      // First, assign coordinates to the children
+      for (Node child in node.children) {
+        assign_Coordinates(child, lowestY);
+      }
+
+      // Calculate the new y-coordinate for the node based on its children
+      int avgChildY = node.children.fold(0, (int prev, Node child) => prev + child.y + nodeHeight ~/ 2) ~/ node.children.length;
+      node.y = max(0, avgChildY - nodeHeight ~/ 2);
+      node.x = max(0, maxMapWidth - (node.rank * (nodeWidth + horizontalSpacing)));
+
+      // Update the lowestY values to prevent overlap with other subtrees
+      int totalSubtreeHeight = subtreeHeight(node);
+      lowestY[node.rank] = max(lowestY[node.rank] ?? 0, node.y + totalSubtreeHeight);
+    }
+  //座標割り当ての内部関数
+  //(9/2)
+  int subtreeHeight(Node node) {
+    if (node.children.isEmpty) {
+      return nodeHeight + verticalSpacing;
+    }
+    return node.children.map((child) => subtreeHeight(child)).reduce((a, b) => a + b);
+  }
+*/
+
+/*
+  //ノードを追加するメソッド
+  void addNode(String title, String parent, {bool insertAschild = false, List<String>? newChildren}) {
+    Node parentNode = _nodeList[parent]!; //親ノードの情報を取得(親ノードのchildrenを更新するため)
+
+    //tasksの最後尾のキーにインクリメントして新しいIDを生成
+    int newIDNum = int.parse(_tasks.keys.last) + 1;
+    String newID = newIDNum.toString();
+
+    // 新しいノードの作成
+    List<String> childrenForNewNode = newChildren ?? [];
+    Node newNode = Node(
+        title: title,
+        parent: parent,
+        children: childrenForNewNode, //親ノードの子ノードを子として持つ
+        status: "do",
+        description: "説明");
+
+    // tasksを更新
+    _tasks[newID] = title;
+
+    // nodeListの更新
+
+    //親ノードの子ノードのリストを取得
+    List<String> updatedChildren =
+        List.from(parentNode.children); //親ノードの子リストのコピーを作成
+    if (newChildren != null) {
+      for (String child in newChildren) {
+        updatedChildren.remove(child); //親ノードの子ノードのリストから新しいノードの子ノードを削除
+      }
+    }
+
+    updatedChildren.insert(0, newID); //親の子リストに新しいノードを追加
+
+    _nodeList[newID] = newNode; // nodeListに新しいノードを追加
+    _nodeList[parent] = Node(
+      //親ノードの更新
+      title: parentNode.title,
+      parent: parentNode.parent,
+      children: updatedChildren, //先ほど更新した子ノードのリストをセット
+      status: parentNode.status,
+      description: parentNode.description,
+    );
+    //新しいノードの子ノードのparentを更新
+    if (newChildren != null) {
+      for (String child in newChildren) {
+        _nodeList[child] = Node(
+          title: _nodeList[child]!.title,
+          parent: newID,
+          children: _nodeList[child]!.children,
+          status: _nodeList[child]!.status,
+          description: _nodeList[child]!.description,
+        );
+      }
+    }
+  }
+*/
+
+/*
   // DFSを用いてノードのレイアウトを計算する
   int dfsLayout(Node node, int x, int startY, Map<String, int> childCounts, int level) {
     int nextY = startY;
@@ -313,26 +548,6 @@ class Edge {
     return nextY + nodeHeight + verticalGap;
   }
 
-  // レイアウト計算のエントリーポイント
-  /*
-  void calculateLayout() {
-    // 最大幅を計算
-    maxWidth = calculateMaxWidth();
-
-    // 初期化
-    maxHeight = 0;
-
-    // 子ノードの数を事前計算
-    Map<String, int> childCounts = {};
-    countChildren("1", childCounts);
-
-    // レイアウト計算
-    Node? root = _nodeList["1"];
-    if (root != null) {
-      dfsLayout(root, 0, 0, childCounts, 0);
-    }
-  }
-  */
   // 最大幅を計算する
   int calculateMaxWidth() {
     int maxDepth = findMaxDepth("1", 0);
@@ -357,7 +572,6 @@ class Edge {
     childCounts[nodeId] = count;
     return count;
   }
-
 
   //エッジ
   void addEdge(String parent, String child) {
@@ -404,50 +618,13 @@ class Edge {
   int mapWidth = 1000;
   int mapHeight = 1000;
 
-// ルートノードの座標を設定
+  // ルートノードの座標を設定
   void setRootNode() {
     Node rootNode = _nodeList['1']!;
     rootNode.x = mapWidth;  // 右端
     rootNode.y = mapHeight ~/ 2;// 中央
   }
-  Future<void> addDataToFirestore(User user) async {
-    try {
-      // タイトルが既に存在するか確認
-      QuerySnapshot snapshot = await _firestore.collection('users').doc(user.uid).collection('titles')
-          .where('title', isEqualTo: title)
-          .get();
-
-      // タイトルが存在しない場合のみ追加
-      if (snapshot.docs.isEmpty) {
-        // タイトル用の新しいドキュメントを作成
-        DocumentReference titleRef = _firestore.collection('users').doc(user.uid).collection(title).doc('info');
-
-        await titleRef.set({
-          'title': title,
-        });
-
-        // そのドキュメント内にtasksとtreeサブコレクションを追加
-        await _firestore.collection('users').doc(user.uid).collection(title).doc('tasks').set({
-          'data': tasks,
-        });
-
-        await _firestore.collection('users').doc(user.uid).collection(title).doc('tree').set({
-          'data': tree,
-        });
-
-      } else {
-        print('Title already exists.');
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-
-
-
-
-// レイアウト計算のエントリーポイント
+  // レイアウト計算のエントリーポイント
   void calculateLayout() {
     // ルートノードの座標を設定
     setRootNode();
@@ -455,36 +632,4 @@ class Edge {
     // ルートノードから始めて、再帰的に子ノードの位置を設定
     Node rootNode = _nodeList['1']!;
     //assignCoordinates(rootNode, 0, 100);  // angleOffsetとdistanceStepは任意の値
-  }
-
-
-
-  //コンソールにノード表示
-  void printNodeList() {
-    print('--- Print Node List ---');
-
-    print('--- Tree ---');
-    for (var entry in _tree.entries) {
-      if (!_collectedChildNodes.contains(entry.key)) {
-        print('Key: ${entry.key}, Value: ${entry.value.join(', ')}');
-      }
-    }
-
-    print('--- Tasks ---');
-    for (var entry in _tasks.entries) {
-      if (!_collectedChildNodes.contains(entry.key)) {
-        print('Key: ${entry.key}, Value: ${entry.value}');
-      }
-    }
-
-    print('--- NodeList ---');
-    for (var entry in _nodeList.entries) {
-      if (!_collectedChildNodes.contains(entry.key)) {
-        print('Key: ${entry.key}, Value: ${entry.value.toString()}');
-      }
-    }
-
-    print('--- CollectedChildNodes ---');
-    print(_collectedChildNodes.join(', '));
-  }
-}
+  }*/
