@@ -1,17 +1,16 @@
 import 'dart:convert';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:dennys_web_app/logger/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 
 class Node {
   final String title;
-  late final Node? parent;
-  late final List<Node>? children;
-  final String status;
-  final String description;
+  late Node? parent;
+  late List<Node>? children;
+  String status;
+  String description;
   int x = 0;
   int y = 0;
   int rank = 0;
@@ -27,13 +26,16 @@ class Node {
     rank = (parent != null) ? parent!.rank + 1 : 0;
   }
 
+// Inside the Node class
   void display() {
-    logger.info('Title: $title');
-    logger.info('Parent: ${parent?.title ?? "None"}');
-    logger.info('Children: ${children?.map((e) => e.title).toList()}');
-    logger.info('Status: $status');
-    logger.info('Description: $description');
+    print('Title: $title');
+    print('Parent: ${parent?.title ?? "None"}');
+    print('Children: ${children?.map((e) => e.title).toList() ?? "None"}');
+    print('Status: $status');
+    print('Description: $description');
+    print('Rank: $rank');
   }
+
 
   @override
   String toString() {
@@ -112,7 +114,6 @@ class GlobalTree {
     Map<String, dynamic> result = await generateTaskTree(title);
     return result;
   }
-
   static void _populateNodeListAndEdges() {
     // First, create all Node objects without setting their children
     for (var entry in _singleton!._tasks.entries) {
@@ -137,6 +138,7 @@ class GlobalTree {
           if (childNode != null) {
             childrenNodes.add(childNode);
             childNode.parent = parentNode;  // Set the parent of the child Node
+            childNode.rank = parentNode.rank + 1;  // Update the rank based on the parent's rank
           }
         }
       }
@@ -144,6 +146,7 @@ class GlobalTree {
       parentNode.children = childrenNodes;  // Set the children of the parent Node
     }
   }
+
 
 // Getter methods
   Set<String> get collectedChildNodes => _collectedChildNodes;
@@ -326,7 +329,7 @@ class GlobalTree {
       print(e);
     }
   }
-  
+
   //コンソールにノード表示
   void printNodeList() {
     print('--- Print Node List ---');
@@ -388,6 +391,20 @@ class GlobalTree {
     }
     return node.children!.map((child) => subtreeHeight(child)).reduce((a, b) => a + b);
   }
+
+  // Inside the GlobalTree class
+  void displayAllNodes() {
+    print("Displaying all nodes:");
+    for (var entry in _nodeList.entries) {
+      print("Node ID: ${entry.key}");
+      Node node = entry.value;
+      node.display();
+      print("x: ${node.x}, y: ${node.y}");
+      print("----------");
+    }
+  }
+
+
 }
 
 
