@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
@@ -7,7 +9,8 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/src/extensions/vector2.dart';
 import 'package:dennys_web_app/game/map_data.dart';
-
+import 'package:dennys_web_app/global_setting/global_tree.dart';
+import 'package:dennys_web_app/main.dart';
 
 class BuildGame extends StatelessWidget {
   @override
@@ -43,11 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class MyGame extends Game {
   final tileSize = 16.0;
-  final List<List<int>> mapData;
+  late List<List<int>> mapData;
   late SpriteSheet spriteSheet;
   late SpriteSheet playerSpriteSheet;
 
-  MyGame() : mapData = [
+  //MyGame(mapData);
+  MyGame() {
+    mapData = generateMapData();
+  }
+  /*[
     [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4],
     [5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6],
     [7, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 8],
@@ -57,7 +64,32 @@ class MyGame extends Game {
     [7, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 8],
     [9, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 10],
     [11, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 12],
-  ];
+  ];*/
+
+  List<List<int>> generateMapData() {
+    GlobalTree myTree = GlobalTree.instance;
+    late List<List<int>> dynamicMap = generateZeroMatrix(myTree.maxMapHeight+1, myTree.maxMapWidth+1);
+
+    print("Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}"); // Debug
+    print("Matrix dimensions: ${dynamicMap.length}x${dynamicMap[0].length}"); // Debug
+
+    myTree.nodeList.forEach((key, node) {
+      print("Checking node with x: ${node.x}, y: ${node.y}"); // Debug
+
+      if (node.x <= myTree.maxMapHeight && node.y <= myTree.maxMapWidth) {
+        print("Marking node with x: ${node.x}, y: ${node.y} as 1"); // Debug
+        dynamicMap[node.y][node.x] = 1;
+      }
+    });
+
+    return dynamicMap;
+  }
+
+  List<List<int>> generateZeroMatrix(int rows, int cols) {
+    return List.generate(rows, (i) => List.generate(cols, (j) => 0));
+  }
+
+
 
 
   final Vector2 playerPosition = Vector2(3 * 16.0, 3 * 16.0); // 3, 7の位置にプレイヤーを置く
@@ -67,7 +99,6 @@ class MyGame extends Game {
     Vector2(5, 7),
     Vector2(7, 7),
   ]; // プレイヤーの4つのスプライト座標
-
 
   int currentSpriteIndex = 0; // 現在のスプライトのインデックス
   double elapsedTime = 0.0; // 経過時間
@@ -107,13 +138,15 @@ class MyGame extends Game {
         drawTile(canvas, x, y+1, floorTile, spriteCoordinatesFloor);
       }
     }
+
+    /*
     for (int y = 0; y < mapData.length; y++) {
       for (int x = 0; x < mapData[y].length; x++) {
         final floorTile = mapData[y][x];
         drawTile(canvas, x, y+24, floorTile, spriteCoordinatesFloor);
       }
     }
-
+    */
     // 壁や他のオブジェクトのレイヤーを描画
     for (int y = 0; y < mapData.length; y++) {
       for (int x = 0; x < mapData[y].length; x++) {

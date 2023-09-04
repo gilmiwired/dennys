@@ -34,6 +34,7 @@ class Node {
     print('Status: $status');
     print('Description: $description');
     print('Rank: $rank');
+    print('X : $x Y : $y');
   }
 
 
@@ -42,6 +43,7 @@ class Node {
     return 'Title: $title, Parent:${parent?.title ?? "None"}, Children: ${children?.map((e) => e.title).toList()}, Status: $status, Description: $description';
   }
 }
+
 
 
 class GlobalTree {
@@ -57,11 +59,12 @@ class GlobalTree {
 
   int nodeWidth = 12;
   int nodeHeight = 9;
-  int horizontalSpacing = 5;
+  int horizontalSpacing = 40;//横幅
   int verticalSpacing = 5;
   int additionalParentChildDistance = 10;
   int veryExtendedMapWidth = 0;
-  int maxMapWidth =100;
+  int maxMapWidth =0;
+  int maxMapHeight = 0;
 
   Map<int, int> lowestY = {};
 
@@ -98,6 +101,7 @@ class GlobalTree {
           tasks: result['tasks'],
         );
         _populateNodeListAndEdges();
+        _singleton!.calculateMaxMapWidth();
       });
     } else {
       // 同期の初期化ロジック
@@ -107,6 +111,7 @@ class GlobalTree {
         tasks: tasks,
       );
       _populateNodeListAndEdges();
+      _singleton!.calculateMaxMapWidth();
     }
   }
 
@@ -154,6 +159,16 @@ class GlobalTree {
   Map<String, List<int>> get tree => _tree;
   Map<String, String> get tasks => _tasks;
   Map<String, Node> get nodeList => _nodeList;
+
+  void calculateMaxMapWidth() {
+    int maxRank = 0;
+    for (Node node in _nodeList.values) {
+      if (node.rank > maxRank) {
+        maxRank = node.rank;
+      }
+    }
+    maxMapWidth = (nodeWidth + horizontalSpacing) * (maxRank + 1);
+  }
 
   void addNode(String title, String parentID, {bool insertAsChild = false, List<String>? newChildrenIDs}) {
     Node? parentNode = _nodeList[parentID];
@@ -365,6 +380,10 @@ class GlobalTree {
       node.y = max(0, lowestY[node.rank] ?? 0);
       node.x = max(0, maxMapWidth - (node.rank * (nodeWidth + horizontalSpacing)));
       lowestY[node.rank] = max(0, (lowestY[node.rank] ?? 0) + nodeHeight + verticalSpacing);
+      if (node.y + nodeHeight > maxMapHeight) {
+        print("Max Y : ${maxMapHeight}");
+        maxMapHeight = node.y + nodeHeight;
+      }
       return;
     }
 
@@ -383,6 +402,10 @@ class GlobalTree {
     // Update the lowestY values to prevent overlap with other subtrees
     int totalSubtreeHeight = subtreeHeight(node);
     lowestY[node.rank] = max(lowestY[node.rank] ?? 0, node.y + totalSubtreeHeight);
+    if (node.y + nodeHeight > maxMapHeight) {
+      print("Max Y : ${maxMapHeight}");
+      maxMapHeight = node.y + nodeHeight;
+    }
   }
   //割り当てで使うやつ
   int subtreeHeight(Node node) {
@@ -395,6 +418,7 @@ class GlobalTree {
   // Inside the GlobalTree class
   void displayAllNodes() {
     print("Displaying all nodes:");
+    print("Max X : ${maxMapWidth}");
     for (var entry in _nodeList.entries) {
       print("Node ID: ${entry.key}");
       Node node = entry.value;
@@ -402,9 +426,9 @@ class GlobalTree {
       print("x: ${node.x}, y: ${node.y}");
       print("----------");
     }
+
+    print("Max Y : ${maxMapHeight}");
   }
-
-
 }
 
 
