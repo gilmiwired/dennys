@@ -68,7 +68,7 @@ class MyGame extends Game {
 
   List<List<int>> generateMapData() {
     GlobalTree myTree = GlobalTree.instance;
-    late List<List<int>> dynamicMap = generateZeroMatrix(myTree.maxMapHeight+1, myTree.maxMapWidth+1);
+    late List<List<int>> dynamicMap = generateZeroMatrix(myTree.maxMapHeight+20, myTree.maxMapWidth+20);
 
     print("Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}"); // Debug
     print("Matrix dimensions: ${dynamicMap.length}x${dynamicMap[0].length}"); // Debug
@@ -77,10 +77,22 @@ class MyGame extends Game {
       print("Checking node with x: ${node.x}, y: ${node.y}"); // Debug
 
       if (node.x <= myTree.maxMapHeight && node.y <= myTree.maxMapWidth) {
-        print("Marking node with x: ${node.x}, y: ${node.y} as 1"); // Debug
-        dynamicMap[node.y][node.x] = 1;
+        print("Marking node with x: ${node.x}, y: ${node.y}"); // Debug
+
+        for (int dx = 0; dx < floorData.length; ++dx) {
+          for (int dy = 0; dy < floorData[dx].length; ++dy) {
+            int newY = node.y + dx; // Y is for rows
+            int newX = node.x + dy; // X is for columns
+
+            // Make sure we're not going out of bounds
+            if (newY < dynamicMap.length && newX < dynamicMap[0].length) {
+              dynamicMap[newY][newX] += floorData[dx][dy];
+            }
+          }
+        }
       }
     });
+
 
     return dynamicMap;
   }
