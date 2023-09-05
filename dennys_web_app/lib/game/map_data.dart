@@ -60,7 +60,7 @@ final Map<int, Vector2> spriteCoordinatesFloor = {
   15: Vector2(15, 2), // DownWall
 };
 
-final List<List<int>> mapData = [
+final List<List<int>> floorData = [
   [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4],
   [5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6],
   [7, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 8],
