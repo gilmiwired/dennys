@@ -6,6 +6,7 @@ import 'package:flame/src/extensions/vector2.dart';
 
 //wall
 final Map<int, Vector2> spriteCoordinates = {
+  -1 :Vector2(5, 2),
   0: Vector2(0, 0),  // none_tile
   1: Vector2(5, 2),  // TopWall
   2: Vector2(4, 2),  // TopEdge
@@ -33,6 +34,7 @@ final Map<int, Vector2> spriteCoordinates = {
 };
 
 final Map<int, Vector2> spriteCoordinatesFloor = {
+  -1 :Vector2(14, 2),
   0: Vector2(0, 0),  // none_tile
 
   1: Vector2(15, 2),  // TopWall
