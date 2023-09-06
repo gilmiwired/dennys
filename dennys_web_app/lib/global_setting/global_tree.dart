@@ -26,6 +26,13 @@ class Node {
     rank = (parent != null) ? parent!.rank + 1 : 0;
   }
 
+  int countChildren() {
+    if (children == null) {
+      return 0;
+    }
+    return children!.length;
+  }
+
 // Inside the Node class
   void display() {
     print('Title: $title');
@@ -34,7 +41,7 @@ class Node {
     print('Status: $status');
     print('Description: $description');
     print('Rank: $rank');
-    print('X : $x Y : $y');
+    print('node X : $x node Y : $y');
   }
 
 
@@ -65,6 +72,7 @@ class GlobalTree {
   int veryExtendedMapWidth = 0;
   int maxMapWidth =0;
   int maxMapHeight = 0;
+  int maxRank = 0;
 
   Map<int, int> lowestY = {};
 
@@ -386,6 +394,9 @@ class GlobalTree {
       }
       return;
     }
+    if (node.rank > maxRank) {
+      maxRank = node.rank;
+    }
 
     // First, assign coordinates to the children
     if (node.children != null) {
@@ -414,6 +425,15 @@ class GlobalTree {
     }
     return node.children!.map((child) => subtreeHeight(child)).reduce((a, b) => a + b);
   }
+
+  //ノードの子供数カウント
+  int countDirectChildren(Node node) {
+    if (node.children == null) {
+      return 0;
+    }
+    return node.children!.length;
+  }
+
 
   // Inside the GlobalTree class
   void displayAllNodes() {
