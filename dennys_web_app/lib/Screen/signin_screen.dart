@@ -1,40 +1,37 @@
+// signin_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'signin_screen.dart';
-import 'package:dennys_web_app/profile/user_model.dart';
+import 'signup_screen.dart';
 import 'Welcome.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignInScreen extends StatefulWidget {
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future<void> _signUp() async {
+  Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
             email: _emailController.text, password: _passwordController.text);
-        print("Sign up successful for email: ${_emailController.text}");
-        UserModel userModel = UserModel(uid: userCredential.user!.uid, email: userCredential.user!.email);
+        print("Sign in successful for email: ${_emailController.text}");
 
-        print("UserModel: uid=${userModel.uid}, email=${userModel.email}");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Successfully Signed Up!')),
+          SnackBar(content: Text('Successfully Signed In!')),
         );
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => WelcomeScreen(user: userCredential.user)));
-
       } catch (e) {
-        print("Sign up failed with error: $e");
+        print("Sign in failed with error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign Up Failed: $e')),
+          SnackBar(content: Text('Sign In Failed: $e')),
         );
       }
     }
@@ -60,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             children: [
               // Header
               _buildCustomHeader(),
-              // Sign Up Form
+              // Sign In Form
               Expanded(
                 child: Center(
                   child: Padding(
@@ -74,7 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           SizedBox(height: 20),
                           _buildInputField('Password', 'Enter your password', _passwordController),
                           SizedBox(height: 40),
-                          _buildSignUpButton(),
+                          _buildSignInButton(),
                         ],
                       ),
                     ),
@@ -103,7 +100,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: TextStyle(
                 color: Color(0xFFBE60AE),
                 fontSize: 32,
-                fontFamily: 'Noto Sans Japanese',
+                fontFamily: 'Inter',
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -111,11 +108,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignInScreen()),  // SignInScreenに遷移
+                  MaterialPageRoute(builder: (context) => SignUpScreen()),  // SignInScreenに遷移
                 );
               },
               child: const Text(
-                'Sign in',
+                'Sign up',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 28,
@@ -130,9 +127,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildInputField(String label, String hint, TextEditingController controller) {
+  Widget _buildInputField(String label, String hint, TextEditingController controller, {bool isPassword = false}) {
     return TextField(
-      controller: controller,  // この行を追加
+      controller: controller,
+      obscureText: isPassword,  // パスワードフィールドの場合、テキストを隠します
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
@@ -156,9 +154,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
 
-  Widget _buildSignUpButton() {
+  Widget _buildSignInButton() {
     return ElevatedButton(
-      onPressed: _signUp,  // ここで_signUpメソッドを呼び出します
+      onPressed: _signIn,  // ここで_signUpメソッドを呼び出します
       style: ElevatedButton.styleFrom(
         primary: Color(0xFF102425),
         padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -167,7 +165,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
       child: Text(
-        'Sign up',
+        'Sign in',
         style: TextStyle(
           color: Color(0xFFF2C9E7),
           fontSize: 20,
@@ -177,5 +175,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
-
+// _buildCustomHeader(), _buildInputField(), _buildSignInButton()
 }
