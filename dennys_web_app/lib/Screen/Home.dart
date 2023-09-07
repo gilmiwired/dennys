@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui'; // ImageFilterを使用するために必要
 import 'dart:math';
 import 'signup_screen.dart';
+import 'signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -41,7 +42,7 @@ class CustomHeader extends StatelessWidget {
   const CustomHeader({Key? key}) : super(key: key);
   Widget _buildBrandName() {
     return Text(
-      'Runduraft',
+      'Randuraft',
       style: const TextStyle(
         color: Color(0xFFBE60AE),
         fontSize: 50,
@@ -54,13 +55,21 @@ class CustomHeader extends StatelessWidget {
   Widget _buildSignInSignUp(BuildContext context) {
     return Row(
       children: [
-        const Text(
-          'Sign in',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 28,
-            fontFamily: 'Noto Sans Japanese',
-            fontWeight: FontWeight.w900,
+        GestureDetector(  // GestureDetectorを追加
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SignInScreen()),  // SignInScreenに遷移
+            );
+          },
+          child: const Text(
+            'Sign in',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 28,
+              fontFamily: 'Noto Sans Japanese',
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
         const SizedBox(width: 48.0),
@@ -202,7 +211,7 @@ class MainContent extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: 'Runduraft',
+                text: 'Randuraft',
                 style: TextStyle(
                   color: const Color(0xFFBE60AE),
                   fontSize: subTextFontSize, // ここでサブテキストのフォントサイズを使用
