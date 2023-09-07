@@ -1,17 +1,16 @@
 import 'dart:convert';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:dennys_web_app/logger/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 
 class Node {
   final String title;
-  late final Node? parent;
-  late final List<Node>? children;
-  final String status;
-  final String description;
+  late Node? parent;
+  late List<Node>? children;
+  String status;
+  String description;
   int x = 0;
   int y = 0;
   int rank = 0;
@@ -27,19 +26,31 @@ class Node {
     rank = (parent != null) ? parent!.rank + 1 : 0;
   }
 
-  void display() {
-    logger.info('Title: $title');
-    logger.info('Parent: ${parent?.title ?? "None"}');
-    logger.info('Children: ${children?.map((e) => e.title).toList()}');
-    logger.info('Status: $status');
-    logger.info('Description: $description');
+  int countChildren() {
+    if (children == null) {
+      return 0;
+    }
+    return children!.length;
   }
+
+// Inside the Node class
+  void display() {
+    print('Title: $title');
+    print('Parent: ${parent?.title ?? "None"}');
+    print('Children: ${children?.map((e) => e.title).toList() ?? "None"}');
+    print('Status: $status');
+    print('Description: $description');
+    print('Rank: $rank');
+    print('node X : $x node Y : $y');
+  }
+
 
   @override
   String toString() {
     return 'Title: $title, Parent:${parent?.title ?? "None"}, Children: ${children?.map((e) => e.title).toList()}, Status: $status, Description: $description';
   }
 }
+
 
 
 class GlobalTree {
@@ -55,11 +66,13 @@ class GlobalTree {
 
   int nodeWidth = 12;
   int nodeHeight = 9;
-  int horizontalSpacing = 5;
+  int horizontalSpacing = 40;//横幅
   int verticalSpacing = 5;
   int additionalParentChildDistance = 10;
   int veryExtendedMapWidth = 0;
-  int maxMapWidth =100;
+  int maxMapWidth =0;
+  int maxMapHeight = 0;
+  int maxRank = 0;
 
   Map<int, int> lowestY = {};
 
@@ -96,6 +109,7 @@ class GlobalTree {
           tasks: result['tasks'],
         );
         _populateNodeListAndEdges();
+        _singleton!.calculateMaxMapWidth();
       });
     } else {
       // 同期の初期化ロジック
@@ -105,6 +119,7 @@ class GlobalTree {
         tasks: tasks,
       );
       _populateNodeListAndEdges();
+      _singleton!.calculateMaxMapWidth();
     }
   }
 
@@ -112,7 +127,6 @@ class GlobalTree {
     Map<String, dynamic> result = await generateTaskTree(title);
     return result;
   }
-
   static void _populateNodeListAndEdges() {
     // First, create all Node objects without setting their children
     for (var entry in _singleton!._tasks.entries) {
@@ -137,6 +151,7 @@ class GlobalTree {
           if (childNode != null) {
             childrenNodes.add(childNode);
             childNode.parent = parentNode;  // Set the parent of the child Node
+            childNode.rank = parentNode.rank + 1;  // Update the rank based on the parent's rank
           }
         }
       }
@@ -145,12 +160,23 @@ class GlobalTree {
     }
   }
 
+
 // Getter methods
   Set<String> get collectedChildNodes => _collectedChildNodes;
   String get title => _title;
   Map<String, List<int>> get tree => _tree;
   Map<String, String> get tasks => _tasks;
   Map<String, Node> get nodeList => _nodeList;
+
+  void calculateMaxMapWidth() {
+    int maxRank = 0;
+    for (Node node in _nodeList.values) {
+      if (node.rank > maxRank) {
+        maxRank = node.rank;
+      }
+    }
+    maxMapWidth = (nodeWidth + horizontalSpacing) * (maxRank + 1);
+  }
 
   void addNode(String title, String parentID, {bool insertAsChild = false, List<String>? newChildrenIDs}) {
     Node? parentNode = _nodeList[parentID];
@@ -326,7 +352,7 @@ class GlobalTree {
       print(e);
     }
   }
-  
+
   //コンソールにノード表示
   void printNodeList() {
     print('--- Print Node List ---');
@@ -362,7 +388,14 @@ class GlobalTree {
       node.y = max(0, lowestY[node.rank] ?? 0);
       node.x = max(0, maxMapWidth - (node.rank * (nodeWidth + horizontalSpacing)));
       lowestY[node.rank] = max(0, (lowestY[node.rank] ?? 0) + nodeHeight + verticalSpacing);
+      if (node.y + nodeHeight > maxMapHeight) {
+        print("Max Y : ${maxMapHeight}");
+        maxMapHeight = node.y + nodeHeight;
+      }
       return;
+    }
+    if (node.rank > maxRank) {
+      maxRank = node.rank;
     }
 
     // First, assign coordinates to the children
@@ -380,6 +413,10 @@ class GlobalTree {
     // Update the lowestY values to prevent overlap with other subtrees
     int totalSubtreeHeight = subtreeHeight(node);
     lowestY[node.rank] = max(lowestY[node.rank] ?? 0, node.y + totalSubtreeHeight);
+    if (node.y + nodeHeight > maxMapHeight) {
+      print("Max Y : ${maxMapHeight}");
+      maxMapHeight = node.y + nodeHeight;
+    }
   }
   //割り当てで使うやつ
   int subtreeHeight(Node node) {
@@ -387,6 +424,30 @@ class GlobalTree {
       return nodeHeight + verticalSpacing;
     }
     return node.children!.map((child) => subtreeHeight(child)).reduce((a, b) => a + b);
+  }
+
+  //ノードの子供数カウント
+  int countDirectChildren(Node node) {
+    if (node.children == null) {
+      return 0;
+    }
+    return node.children!.length;
+  }
+
+
+  // Inside the GlobalTree class
+  void displayAllNodes() {
+    print("Displaying all nodes:");
+    print("Max X : ${maxMapWidth}");
+    for (var entry in _nodeList.entries) {
+      print("Node ID: ${entry.key}");
+      Node node = entry.value;
+      node.display();
+      print("x: ${node.x}, y: ${node.y}");
+      print("----------");
+    }
+
+    print("Max Y : ${maxMapHeight}");
   }
 }
 
