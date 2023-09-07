@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
@@ -7,7 +9,9 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/src/extensions/vector2.dart';
 import 'package:dennys_web_app/game/map_data.dart';
-
+import 'package:dennys_web_app/global_setting/global_tree.dart';
+import 'package:dennys_web_app/main.dart';
+import 'dart:math';
 
 class BuildGame extends StatelessWidget {
   @override
@@ -43,11 +47,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class MyGame extends Game {
   final tileSize = 16.0;
-  final List<List<int>> mapData;
+  late List<List<int>> mapData;
   late SpriteSheet spriteSheet;
   late SpriteSheet playerSpriteSheet;
 
-  MyGame() : mapData = [
+  //MyGame(mapData);
+  MyGame() {
+    mapData = generateMapData();
+  }
+  /*[
     [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4],
     [5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6],
     [7, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 8],
@@ -57,7 +65,115 @@ class MyGame extends Game {
     [7, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 8],
     [9, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 10],
     [11, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 12],
-  ];
+  ];*/
+
+  List<List<int>> generateMapData() {
+    GlobalTree myTree = GlobalTree.instance;
+    late List<List<int>> dynamicMap = generateZeroMatrix(myTree.maxMapHeight+20, myTree.maxMapWidth+20);
+
+    print("Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}"); // Debug
+    print("Matrix dimensions: ${dynamicMap.length}x${dynamicMap[0].length}"); // Debug
+
+    myTree.nodeList.forEach((key, node) {
+
+      print("key: ${key}");
+      print("Checking node with x: ${node.x}, y: ${node.y}"); // Debug
+
+      if (node.x <= myTree.maxMapHeight && node.y <= myTree.maxMapWidth) {
+        print("Marking node with x: ${node.x}, y: ${node.y}"); // Debug
+
+        for (int dx = 0; dx < floorData.length; ++dx) {
+          for (int dy = 0; dy < floorData[dx].length; ++dy) {
+            int newY = node.y + dx; // Y is for rows
+            int newX = node.x + dy; // X is for columns
+            //print("new node with newX: $newX, newY: $newY dx $dx dy $dy ${floorData[dx][dy]}"); // Debug
+
+
+            // Make sure we're not going out of bounds
+            if (newY < dynamicMap.length && newX < dynamicMap[0].length) {
+              dynamicMap[newY][newX] += floorData[dx][dy];
+            }
+          }
+        }
+
+        // Initialize variables to hold the min and max y values and corresponding nodes
+        int? minY;
+        Node? minNode;
+        int? maxY;
+        Node? maxNode;
+
+        // Loop through each child and update min and max y values and nodes
+        if (node.children != null) {
+          node.children!.forEach((child) {
+            if (minY== null || child.y < minY!) {
+              minY = child.y;
+              minNode = child;
+            }
+            if (maxY == null || child.y > maxY!) {
+              maxY = child.y;
+              maxNode = child;
+            }
+          });
+        }
+
+        // Compute the length in y direction spanned by the children
+        if (minY != null && maxY != null) {
+          int yLength = maxY! - minY!;
+          print("yLength spanned by children of node with key $key: $yLength");
+          print("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
+        } else {
+          print("Node with key $key has no children, so yLength is undefined.");
+        }
+
+
+        print('${node.rank} maxRank ${myTree.maxRank}');
+        //dynamicMap[node.y+4][node.x]=1;
+
+        if(node.rank != myTree.maxRank+1 && node.countChildren()!=0){
+
+          int edgeLength = 0;
+          for(int i = 0; i<(myTree.horizontalSpacing ~/ 2);i++){
+            dynamicMap[node.y+4][node.x-i] = -1;
+          }
+          for(int i = minNode!.y+4; i<maxNode!.y+4; i++){
+            dynamicMap[i][node.x-(myTree.horizontalSpacing~/2)]=-1;
+          }
+          node.children!.forEach((child) {
+            for(int i=0;i<(myTree.horizontalSpacing ~/ 2);i++){
+              dynamicMap[child.y+4][child.x+myTree.nodeWidth+(myTree.horizontalSpacing~/2)-1-i] = -1;
+            }
+          });
+        }
+      }
+    });
+
+
+
+    /*
+    myTree.nodeList.forEach((key, node) {
+      if (node.children != null && node.children!.isNotEmpty) {
+        int adjustedX = node.x - (myTree.horizontalSpacing ~/ 2);
+        int adjustedY = node.y - 5;
+        print("node title :${node.title} node x: ${node.x}, node y: ${node.y}");
+        print("Adjusted X: $adjustedX, Adjusted Y: $adjustedY");
+        print ("${myTree.horizontalSpacing ~/ 2}");
+
+        dynamicMap[adjustedY][adjustedX] = 1;
+      }
+    });
+*/
+
+
+
+    return dynamicMap;
+  }
+
+
+  List<List<int>> generateZeroMatrix(int rows, int cols) {
+    return List.generate(rows, (i) => List.generate(cols, (j) => 0));
+  }
+
+
 
 
   final Vector2 playerPosition = Vector2(3 * 16.0, 3 * 16.0); // 3, 7の位置にプレイヤーを置く
@@ -67,7 +183,6 @@ class MyGame extends Game {
     Vector2(5, 7),
     Vector2(7, 7),
   ]; // プレイヤーの4つのスプライト座標
-
 
   int currentSpriteIndex = 0; // 現在のスプライトのインデックス
   double elapsedTime = 0.0; // 経過時間
@@ -107,13 +222,15 @@ class MyGame extends Game {
         drawTile(canvas, x, y+1, floorTile, spriteCoordinatesFloor);
       }
     }
+
+    /*
     for (int y = 0; y < mapData.length; y++) {
       for (int x = 0; x < mapData[y].length; x++) {
         final floorTile = mapData[y][x];
         drawTile(canvas, x, y+24, floorTile, spriteCoordinatesFloor);
       }
     }
-
+    */
     // 壁や他のオブジェクトのレイヤーを描画
     for (int y = 0; y < mapData.length; y++) {
       for (int x = 0; x < mapData[y].length; x++) {
@@ -142,83 +259,6 @@ class MyGame extends Game {
       canvas,
       Offset(centerX * tileSize.toDouble(), centerY * tileSize.toDouble()),
     );
-
-
-    /*
-    // 0の場合のプレイヤー描画処理
-    double dx = 1 * tileSize; // x座標（0の場合）
-    double dy = 1 * tileSize; // y座標（0の場合）
-
-    // スプライト座標（ここでは例として (0, 0)）
-    int spriteX = 1;
-    int spriteY = 0;
-
-
-    final sprite = playerSpriteSheet.getSprite(spriteX , spriteY);
-    sprite.render(
-      canvas,
-      position: Vector2(
-          dx.toDouble() + (0 * tileSize),
-          dy.toDouble() + (0 * tileSize)
-      ),
-      size: Vector2(tileSize, tileSize),
-    );
-
-
-    final sprite2 = playerSpriteSheet.getSprite(spriteX+1 , spriteY);
-    sprite2.render(
-      canvas,
-      position: Vector2(
-          dx.toDouble() + (0 * tileSize),
-          dy.toDouble() + (1 * tileSize)
-      ),
-      size: Vector2(tileSize, tileSize),
-    );
-
-
-    final sprite3 = playerSpriteSheet.getSprite(spriteX , spriteY+1);
-    sprite3.render(
-      canvas,
-      position: Vector2(
-          dx.toDouble() + (1 * tileSize),
-          dy.toDouble() + (0 * tileSize)
-      ),
-      size: Vector2(tileSize, tileSize),
-    );
-
-
-    final sprite4 = playerSpriteSheet.getSprite(spriteX+1 , spriteY+1);
-    sprite4.render(
-      canvas,
-      position: Vector2(
-          dx.toDouble() + (1 * tileSize),
-          dy.toDouble() + (1 * tileSize)
-      ),
-      size: Vector2(tileSize, tileSize),
-    );
-
-    final sprite5 = playerSpriteSheet.getSprite(spriteX , spriteY+2);
-    sprite5.render(
-      canvas,
-      position: Vector2(
-          dx.toDouble() + (2 * tileSize),
-          dy.toDouble() + (0 * tileSize)
-      ),
-      size: Vector2(tileSize, tileSize),
-    );
-
-
-    final sprite6 = playerSpriteSheet.getSprite(spriteX+1 , spriteY+2);
-    sprite6.render(
-      canvas,
-      position: Vector2(
-          dx.toDouble() + (2 * tileSize),
-          dy.toDouble() + (1 * tileSize)
-      ),
-      size: Vector2(tileSize, tileSize),
-    );
-  */
-
     // renderメソッド内で
     //drawPlayer(canvas, playerPosition, playerSprites[0],16,playerSpriteSheet); // プレイヤー1のスプライトを描画
     drawPlayer(canvas, playerPosition, playerSprites[0], 16, playerSpriteSheet);
