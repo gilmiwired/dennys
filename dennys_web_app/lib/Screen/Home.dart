@@ -6,19 +6,27 @@ import 'signin_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // この行を追加
-  await Firebase.initializeApp(); // この行を追加
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const FigmaToCodeApp());
 }
+
 class FigmaToCodeApp extends StatelessWidget {
   const FigmaToCodeApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: const Color(0xFF102425),
+        colorScheme: ThemeData.dark().colorScheme.copyWith(
+          secondary: const Color(0xFFBE60AE),
+        ),
+        scaffoldBackgroundColor: const Color(0xFF102425),
+        fontFamily: 'Inter',
       ),
+
       home: const Scaffold(body: Home()),
     );
   }
@@ -40,13 +48,13 @@ class Home extends StatelessWidget {
 
 class CustomHeader extends StatelessWidget {
   const CustomHeader({Key? key}) : super(key: key);
+
   Widget _buildBrandName() {
     return Text(
       'Randuraft',
       style: const TextStyle(
         color: Color(0xFFBE60AE),
         fontSize: 50,
-        fontFamily: 'Noto Sans Japanese',
         fontWeight: FontWeight.w900,
       ),
     );
@@ -55,25 +63,24 @@ class CustomHeader extends StatelessWidget {
   Widget _buildSignInSignUp(BuildContext context) {
     return Row(
       children: [
-        GestureDetector(  // GestureDetectorを追加
+        GestureDetector(
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SignInScreen()),  // SignInScreenに遷移
+              MaterialPageRoute(builder: (context) => SignInScreen()),
             );
           },
           child: const Text(
             'Sign in',
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 28,
-              fontFamily: 'Noto Sans Japanese',
               fontWeight: FontWeight.w900,
             ),
           ),
         ),
         const SizedBox(width: 48.0),
-        GestureDetector(  // この部分を追加
+        GestureDetector(
           onTap: () {
             Navigator.push(
               context,
@@ -83,15 +90,14 @@ class CustomHeader extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             decoration: BoxDecoration(
-              color: Color(0xFF102425),
+              color: Color(0xFFBE60AE),
               borderRadius: BorderRadius.circular(100),
             ),
             child: const Text(
               'Sign up',
               style: TextStyle(
-                color: Color(0xFFF2C9E7),
+                color: Colors.white,
                 fontSize: 28,
-                fontFamily: 'Noto Sans Japanese',
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -103,40 +109,30 @@ class CustomHeader extends StatelessWidget {
 
   Widget _buildMenuIcon(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.menu, color: Colors.black, size: 40.0),
+      icon: Icon(Icons.menu, color: Color(0xFFD996C7), size: 40.0),
       onPressed: () {
         showDialog(
           context: context,
+          barrierDismissible: true, // 背景をタップしてもダイアログが閉じる
+          barrierColor: Colors.transparent, // 背景を透明に
           builder: (BuildContext context) {
-            return AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextButton(
-                    child: const Text("Sign in"),
-                    onPressed: () {},
-                  ),
-                  TextButton(
-                    child: const Text("Sign up"),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            );
+            return ModernDialog();
           },
         );
       },
     );
   }
 
+
+
+
+  @override
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 98,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 21),
-      decoration: BoxDecoration(color: const Color(0xFFF2C9E7)),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth > 600) {
@@ -144,7 +140,7 @@ class CustomHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildBrandName(),
-                _buildSignInSignUp(context),  // ここでcontextを渡します
+                _buildSignInSignUp(context),
               ],
             );
           } else {
@@ -161,6 +157,70 @@ class CustomHeader extends StatelessWidget {
     );
   }
 }
+
+class ModernDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Color(0xFFBF60AF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(Icons.close, color: Colors.white, size: 30.0),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            SizedBox(height: 20),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignInScreen()),
+                );
+              },
+              child: Text(
+                'Sign in',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40,
+                  fontFamily: 'Noto Sans Japanese',
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+            SizedBox(height: 40),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignUpScreen()),
+                );
+              },
+              child: Text(
+                'Sign up',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40,
+                  fontFamily: 'Noto Sans Japanese',
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
 class MainContent extends StatelessWidget {
   const MainContent({Key? key}) : super(key: key);
@@ -245,11 +305,7 @@ class MainContent extends StatelessWidget {
     if (width > 800) { // 大のサイズ
       return Container(
         width: width,
-        clipBehavior: Clip.antiAlias,
-        decoration: const ShapeDecoration(
-          color: Color(0xFF102425),
-          shape: RoundedRectangleBorder(side: BorderSide(width: 0.50)),
-        ),
+        color: const Color(0xFF102425), // ここを変更
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center, // 中央に配置
           children: [
@@ -263,11 +319,7 @@ class MainContent extends StatelessWidget {
       return SingleChildScrollView(
         child: Container(
           width: width,
-          clipBehavior: Clip.antiAlias,
-          decoration: const ShapeDecoration(
-            color: Color(0xFF102425),
-            shape: RoundedRectangleBorder(side: BorderSide(width: 0.50)),
-          ),
+          color: const Color(0xFF102425), // ここを変更
           child: Column(
             children: [
               const Frame12(),
@@ -280,6 +332,7 @@ class MainContent extends StatelessWidget {
     }
   }
 }
+
 
 class Frame12 extends StatefulWidget {
   const Frame12({Key? key}) : super(key: key);
