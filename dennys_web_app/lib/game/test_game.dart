@@ -47,6 +47,8 @@ class MyGame extends Game {
   late List<List<int>> mapData;
   late SpriteSheet spriteSheet;
   late SpriteSheet playerSpriteSheet;
+  GlobalTree myTree = GlobalTree.instance;
+  late List<List<int>> dynamicMap = generateZeroMatrix(myTree.maxMapHeight+20, myTree.maxMapWidth+20);
 
   //MyGame(mapData);
   MyGame() {
@@ -55,8 +57,6 @@ class MyGame extends Game {
 
 
   List<List<int>> generateMapData() {
-    GlobalTree myTree = GlobalTree.instance;
-    late List<List<int>> dynamicMap = generateZeroMatrix(myTree.maxMapHeight+20, myTree.maxMapWidth+20);
     print("Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}");
     print("Matrix dimensions: ${dynamicMap.length}x${dynamicMap[0].length}");
 
@@ -200,8 +200,6 @@ class MyGame extends Game {
           //~done
 
           //右道
-          //node.y
-
           for(int j=0;j<5;j++) {
             dynamicMap[node.y+2+j][node.x] = verticalRight[j];
             dynamicMap[node.y+2+j][yMiddleEdge-1] = verticalLeft[j];
@@ -258,7 +256,6 @@ class MyGame extends Game {
     canvas.save();
     canvas.translate(-400, 50);
     canvas.scale(0.8);
-
     // 床レイヤーを描画
     for (int y = 0; y < mapData.length; y++) {
       for (int x = 0; x < mapData[y].length; x++) {
@@ -273,6 +270,7 @@ class MyGame extends Game {
         drawTile(canvas, x, y, tile, spriteCoordinates);
       }
     }
+    drawNodeText(canvas);
   }
 
   void drawTile(Canvas canvas, int x, int y, int tileType, Map<int, Vector2> coordinates) {
@@ -285,6 +283,27 @@ class MyGame extends Game {
       position: Vector2(dx.toDouble(), dy.toDouble()),
       size: Vector2(tileSize, tileSize),
     );
+  }
+
+  // Function to draw text on a specific tile
+  void drawText(Canvas canvas, String text, int x, int y) {
+    final textSpan = TextSpan(
+      text: text,
+      style: TextStyle(color: , fontSize: 12.0),
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    final offset = Offset(x * tileSize, y * tileSize);
+    textPainter.paint(canvas, offset);
+  }
+
+  void drawNodeText(Canvas canvas){
+    myTree.nodeList.forEach((key, node){
+      drawText(canvas, node.title, node.x+2, node.y+4);
+    });
   }
 
   @override
