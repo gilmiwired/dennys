@@ -45,13 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
 class MyGame extends Game {
   final tileSize = 16.0;
   late List<List<int>> mapData;
+  late List<List<int>> floorData;
   late SpriteSheet spriteSheet;
   late SpriteSheet playerSpriteSheet;
   GlobalTree myTree = GlobalTree.instance;
-  late List<List<int>> dynamicMap = generateZeroMatrix(myTree.maxMapHeight+20, myTree.maxMapWidth+20);
+  late List<List<int>> dynamicMap = generateCustomMatrix(myTree.maxMapHeight+myTree.nodeHeight, myTree.maxMapWidth+myTree.nodeWidth,0);
 
   //MyGame(mapData);
   MyGame() {
+    generateFloorData();
     mapData = generateMapData();
   }
 
@@ -63,7 +65,7 @@ class MyGame extends Game {
     myTree.nodeList.forEach((key, node) {
       print("Checking node with x: ${node.x}, y: ${node.y}");
 
-      if (node.x <= myTree.maxMapHeight && node.y <= myTree.maxMapWidth) {
+      if (node.x <= myTree.maxMapHeight && node.y <= myTree.maxMapWidth+myTree.nodeWidth+myTree.additionalParentChildDistance+myTree.verticalSpacing) {
         for (int dx = 0; dx < floorData.length; ++dx) {
           for (int dy = 0; dy < floorData[dx].length; ++dy) {
             int newY = node.y + dx;
@@ -141,12 +143,12 @@ class MyGame extends Game {
         // Compute the length in y direction spanned by the children
         if (minY != null && maxY != null) {
           int yLength = maxY! - minY!;
-          print("yLength spanned by children of node with key $key: $yLength");
-          print("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
+          //print("yLength spanned by children of node with key $key: $yLength");
+          //print("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
         } else {
-          print("Node with key $key has no children, so yLength is undefined.");
+          //print("Node with key $key has no children, so yLength is undefined.");
         }
-        print('${node.rank} maxRank ${myTree.maxRank}');
+        //print('${node.rank} maxRank ${myTree.maxRank}');
 
         if(node.rank != myTree.maxRank+1 && node.countChildren()!=0){
           //左道
@@ -215,9 +217,24 @@ class MyGame extends Game {
     return dynamicMap;
   }
 
-  List<List<int>> generateZeroMatrix(int rows, int cols) {
-    return List.generate(rows, (i) => List.generate(cols, (j) => 0));
+  List<List<int>> generateCustomMatrix(int rows, int cols, int num) {
+    return List.generate(rows, (i) => List.generate(cols, (j) => num));
   }
+
+  void generateFloorData() {
+    int nodeHeight = myTree.nodeHeight;
+    int nodeWidth = myTree.nodeWidth;
+    floorData = generateCustomMatrix(nodeHeight, nodeWidth, 15);
+    floorData[0] = [3] + List.filled(nodeWidth - 2, 2) + [4];
+    floorData[1] = [5] + List.filled(nodeWidth - 2, 1) + [6];
+
+    for (int i = 2; i < nodeHeight - 2; i++) {
+      floorData[i] = [7] + List.filled(nodeWidth - 2, 15) + [8];
+    }
+    floorData[nodeHeight - 2] = [9] + List.filled(nodeWidth - 2, 14) + [10];
+    floorData[nodeHeight - 1] = [11] + List.filled(nodeWidth - 2, 13) + [12];
+  }
+
 
   final List<Vector2> playerSprites = [
     Vector2(1, 0),
@@ -289,7 +306,7 @@ class MyGame extends Game {
   void drawText(Canvas canvas, String text, int x, int y) {
     final textSpan = TextSpan(
       text: text,
-      style: TextStyle(color: , fontSize: 12.0),
+      style: TextStyle(color: Color(0xFFCEF09D), fontSize: 24.0),
     );
     final textPainter = TextPainter(
       text: textSpan,
