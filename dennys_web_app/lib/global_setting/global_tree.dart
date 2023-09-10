@@ -64,9 +64,9 @@ class GlobalTree {
 
   //9/2以降追加分
 
-  int nodeWidth = 12;
-  int nodeHeight = 9;
-  int horizontalSpacing = 40;//横幅
+  int nodeWidth = 20;
+  int nodeHeight = 10;
+  int horizontalSpacing = 20;//横幅
   int verticalSpacing = 5;
   int additionalParentChildDistance = 10;
   int veryExtendedMapWidth = 0;

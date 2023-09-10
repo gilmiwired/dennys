@@ -84,7 +84,7 @@ final Map<int, Vector2> spriteCoordinatesFloor = {
   24: Vector2(15,2),
 
 };
-
+/*
 final List<List<int>> floorData = [
   [3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4],
   [5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6],
@@ -96,3 +96,4 @@ final List<List<int>> floorData = [
   [9, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 10],
   [11, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 12],
 ];
+*/
