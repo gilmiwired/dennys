@@ -49,7 +49,9 @@ class MyGame extends Game {
   late SpriteSheet spriteSheet;
   late SpriteSheet playerSpriteSheet;
   GlobalTree myTree = GlobalTree.instance;
-  late List<List<int>> dynamicMap = generateCustomMatrix(myTree.maxMapHeight+myTree.nodeHeight, myTree.maxMapWidth+myTree.nodeWidth,0);
+  late List<List<int>> dynamicMap = generateCustomMatrix(myTree.maxMapHeight+(myTree.horizontalSpacing*5), myTree.maxMapWidth+myTree.nodeWidth,0);
+  late final int maxWidth=myTree.maxMapHeight+(myTree.horizontalSpacing*(myTree.maxRank+3));
+  late final int maxHeight=myTree.maxMapWidth+myTree.nodeWidth+myTree.additionalParentChildDistance+myTree.verticalSpacing;
 
   //MyGame(mapData);
   MyGame() {
@@ -65,7 +67,7 @@ class MyGame extends Game {
     myTree.nodeList.forEach((key, node) {
       print("Checking node with x: ${node.x}, y: ${node.y}");
 
-      if (node.x <= myTree.maxMapHeight && node.y <= myTree.maxMapWidth+myTree.nodeWidth+myTree.additionalParentChildDistance+myTree.verticalSpacing) {
+      if (node.x <= maxWidth && node.y <= maxHeight) {
         for (int dx = 0; dx < floorData.length; ++dx) {
           for (int dy = 0; dy < floorData[dx].length; ++dy) {
             int newY = node.y + dx;
@@ -119,7 +121,7 @@ class MyGame extends Game {
 
     //エッジ作成
     myTree.nodeList.forEach((key, node) {
-      if (node.x <= myTree.maxMapHeight && node.y <= myTree.maxMapWidth) {
+      if (node.x <= maxWidth && node.y <= maxHeight) {
         // Initialize variables to hold the min and max y values and corresponding nodes
         int? minY;
         Node? minNode;
@@ -246,7 +248,6 @@ class MyGame extends Game {
   int currentSpriteIndex = 0; // 現在のスプライトのインデックス
   double elapsedTime = 0.0; // 経過時間
 
-
   @override
   Future<void> onLoad() async {
     final image = await Flame.images.load("dungeon_.png");
@@ -313,14 +314,23 @@ class MyGame extends Game {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    final offset = Offset(x * tileSize, y * tileSize);
+
+    // Calculate the adjusted x-coordinate to center the text
+    double centeredX = (x +(myTree.nodeWidth* 0.75) - (text.length/2) -1)*tileSize;
+
+    final offset = Offset(centeredX, (y+2) * tileSize);
     textPainter.paint(canvas, offset);
   }
 
   void drawNodeText(Canvas canvas){
     myTree.nodeList.forEach((key, node){
-      drawText(canvas, node.title, node.x+2, node.y+4);
+      drawText(canvas, node.title, node.x, node.y);
+
     });
+  }
+
+  void drawEnemy(Canvas canvas){
+
   }
 
   @override

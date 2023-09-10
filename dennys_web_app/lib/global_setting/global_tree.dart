@@ -65,14 +65,15 @@ class GlobalTree {
   //9/2以降追加分
 
   int nodeWidth = 20;
-  int nodeHeight = 10;
-  int horizontalSpacing = 20;//横幅
+  int nodeHeight = 7;
+  int horizontalSpacing = 60;
   int verticalSpacing = 5;
   int additionalParentChildDistance = 10;
   int veryExtendedMapWidth = 0;
   int maxMapWidth =0;
   int maxMapHeight = 0;
   int maxRank = 0;
+  int maxTexLength=0;
 
   Map<int, int> lowestY = {};
 
@@ -130,13 +131,17 @@ class GlobalTree {
   static void _populateNodeListAndEdges() {
     // First, create all Node objects without setting their children
     for (var entry in _singleton!._tasks.entries) {
+      _singleton!.maxTexLength = max(_singleton!.maxTexLength, entry.value.length);
       _singleton!._nodeList[entry.key] = Node(
         title: entry.value,
         parent: null,  // Set parent to null initially
         children: [],  // Initialize children as an empty list
         status: "do",
-        description: "des",
+        description: "説明",
       );
+      _singleton!.nodeWidth = _singleton!.maxTexLength*4;
+      _singleton!.nodeHeight = _singleton!.maxTexLength;
+      _singleton!.horizontalSpacing = _singleton!.maxTexLength*6;
     }
 
     // Now set the parent-child relationships
