@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
@@ -8,6 +10,9 @@ import 'package:flame/flame.dart';
 import 'package:flame/src/extensions/vector2.dart';
 import 'package:dennys_web_app/game/map_data.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:dennys_web_app/profile/user_data.dart';
+import 'dart:math' as math;
 
 
 class BuildGame extends StatelessWidget {
@@ -23,7 +28,7 @@ class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
-
+/*
 class _HomeScreenState extends State<HomeScreen> {
   final game = MyGame();
 
@@ -33,7 +38,93 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('Interactive Map Example'),
       ),
+    body: InteractiveViewer(
+    maxScale: 2.0,
+    minScale: 0.5,
+    child: GameWidget(game: game),
+    ),
+    );
+  }
+}
+*/
+/*
+class _HomeScreenState extends State<HomeScreen> {
+  final game = MyGame();
+  TransformationController _controller = TransformationController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      double screenW = MediaQuery.of(context).size.width;
+      double screenH = MediaQuery.of(context).size.height;
+      double scaleW = screenW / game.mapWidth;
+      double scaleH = screenH / game.mapHeight;
+      double scale = math.min(scaleW, scaleH);
+      _controller.value = Matrix4.identity()..scale(scale);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Interactive Map Example'),
+      ),
+      body: Scrollbar(
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: InteractiveViewer(
+                transformationController: _controller,
+                maxScale: 2.0,
+                minScale: 0.5,
+                child: GameWidget(game: game),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+*/
+
+/*動く
+class _HomeScreenState extends State<HomeScreen> {
+  final game = MyGame();
+
+  // Initial transformation for InteractiveViewer
+  TransformationController _controller = TransformationController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Set the initial transformation of the InteractiveViewer
+    // to show the rightmost part of the game.
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      double screenW = MediaQuery.of(context).size.width;
+      double screenH = MediaQuery.of(context).size.height;
+
+      // Calculate the initial translation to show the rightmost part
+      double translateX = screenW - game.mapWidth;
+
+      _controller.value = Matrix4.identity()..translate(translateX, 0.0);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Interactive Map Example'),
+      ),
       body: InteractiveViewer(
+        transformationController: _controller,
         maxScale: 2.0,
         minScale: 0.5,
         child: GameWidget(game: game),
@@ -41,24 +132,82 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+*/
+/*class _HomeScreenState extends State<HomeScreen> {
+  final game = MyGame();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Interactive Map Example'),
+      ),
+      body: GameWidget(game: game),
+    );
+  }
+}
+*/
+class _HomeScreenState extends State<HomeScreen> {
+  final game = MyGame();
+
+  @override
+  Widget build(BuildContext context) {
+    GlobalTree myTree = GlobalTree.instance;
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      myTree.addDataToFirestore(currentUser);
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Interactive Map Example'),
+      ),
+      body: GestureDetector(
+        onPanUpdate: game.onPanUpdate,
+        child: GameWidget(game: game),
+      ),
+    );
+  }
+}
+
+
+
 
 class MyGame extends Game {
   final tileSize = 16.0;
+
+  //マップデータ
   late List<List<int>> mapData;
   late List<List<int>> floorData;
+
+  //スプライト
   late SpriteSheet spriteSheet;
   late SpriteSheet playerSpriteSheet;
+  late SpriteSheet slimeSpriteSheet;
+  late SpriteSheet warlockSpriteSheet;
+  late SpriteSheet skeletonSpriteSheet;
+  late SpriteSheet dragonSpriteSheet;
+
+  //木関連
   GlobalTree myTree = GlobalTree.instance;
   late List<List<int>> dynamicMap = generateCustomMatrix(myTree.maxMapHeight+(myTree.horizontalSpacing*5), myTree.maxMapWidth+myTree.nodeWidth,0);
-  late final int maxWidth=myTree.maxMapHeight+(myTree.horizontalSpacing*(myTree.maxRank+3));
+  late final int _maxWidth=myTree.maxMapHeight+(myTree.horizontalSpacing*(myTree.maxRank+3));
   late final int maxHeight=myTree.maxMapWidth+myTree.nodeWidth+myTree.additionalParentChildDistance+myTree.verticalSpacing;
+  double startingScale = 1.0;
+  double currentScale = 1.0;
+  Offset currentPanOffset = Offset.zero;
 
-  //MyGame(mapData);
+
+
+  //フラグ
   MyGame() {
     generateFloorData();
     mapData = generateMapData();
   }
 
+  int get mapWidth => _mapWidth;
+  int get mapHeight => _mapHeight;
+  get _mapWidth => (myTree.maxMapHeight+(myTree.horizontalSpacing*5))*tileSize;
+  get _mapHeight => (myTree.maxMapWidth+myTree.nodeWidth+myTree.additionalParentChildDistance+myTree.verticalSpacing)*tileSize;
 
   List<List<int>> generateMapData() {
     print("Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}");
@@ -67,7 +216,7 @@ class MyGame extends Game {
     myTree.nodeList.forEach((key, node) {
       print("Checking node with x: ${node.x}, y: ${node.y}");
 
-      if (node.x <= maxWidth && node.y <= maxHeight) {
+      if (node.x <= _maxWidth && node.y <= maxHeight) {
         for (int dx = 0; dx < floorData.length; ++dx) {
           for (int dy = 0; dy < floorData[dx].length; ++dy) {
             int newY = node.y + dx;
@@ -121,7 +270,7 @@ class MyGame extends Game {
 
     //エッジ作成
     myTree.nodeList.forEach((key, node) {
-      if (node.x <= maxWidth && node.y <= maxHeight) {
+      if (node.x <= _maxWidth && node.y <= maxHeight) {
         // Initialize variables to hold the min and max y values and corresponding nodes
         int? minY;
         Node? minNode;
@@ -141,16 +290,17 @@ class MyGame extends Game {
             }
           });
         }
-
+        /*
         // Compute the length in y direction spanned by the children
         if (minY != null && maxY != null) {
           int yLength = maxY! - minY!;
-          //print("yLength spanned by children of node with key $key: $yLength");
-          //print("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
+          print("yLength spanned by children of node with key $key: $yLength");
+          print("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
         } else {
-          //print("Node with key $key has no children, so yLength is undefined.");
+          print("Node with key $key has no children, so yLength is undefined.");
         }
-        //print('${node.rank} maxRank ${myTree.maxRank}');
+        print('${node.rank} maxRank ${myTree.maxRank}');
+        */
 
         if(node.rank != myTree.maxRank+1 && node.countChildren()!=0){
           //左道
@@ -237,14 +387,14 @@ class MyGame extends Game {
     floorData[nodeHeight - 1] = [11] + List.filled(nodeWidth - 2, 13) + [12];
   }
 
-
+/*
   final List<Vector2> playerSprites = [
     Vector2(1, 0),
     Vector2(3, 7),
     Vector2(5, 7),
     Vector2(7, 7),
   ]; // プレイヤーの4つのスプライト座標
-
+*/
   int currentSpriteIndex = 0; // 現在のスプライトのインデックス
   double elapsedTime = 0.0; // 経過時間
 
@@ -261,16 +411,40 @@ class MyGame extends Game {
       image: playerImage,
       srcSize: Vector2(8, 8),
     );
-    /*
-    final playerImage = await Flame.images.load('knight_.png');
-    playerSpriteSheet = SpriteSheet(
-      image: playerImage,
+
+    final slimeImage = await Flame.images.load('slime_.png');
+    slimeSpriteSheet = SpriteSheet(
+      image: slimeImage,
       srcSize: Vector2(8, 8),
-    );*/
+    );
+
+    final warlockImage = await Flame.images.load('warlock_.png');
+    warlockSpriteSheet = SpriteSheet(
+      image: warlockImage,
+      srcSize: Vector2(8, 8),
+    );
+
+    final dragonImage = await Flame.images.load('dragon_.png');
+    dragonSpriteSheet = SpriteSheet(
+      image: dragonImage,
+      srcSize: Vector2(8, 8),
+    );
+
+    final skeletonImage = await Flame.images.load('skeleton_.png');
+    skeletonSpriteSheet = SpriteSheet(
+      image: skeletonImage,
+      srcSize: Vector2(8, 8),
+    );
   }
 
   @override
   void render(Canvas canvas) {
+    canvas.save();
+
+    // Scaling first
+    canvas.scale(currentScale);
+    canvas.translate(currentPanOffset.dx, currentPanOffset.dy);
+
     canvas.save();
     canvas.translate(-400, 50);
     canvas.scale(0.8);
@@ -278,7 +452,7 @@ class MyGame extends Game {
     for (int y = 0; y < mapData.length; y++) {
       for (int x = 0; x < mapData[y].length; x++) {
         final floorTile = mapData[y][x];
-        drawTile(canvas, x, y+1, floorTile, spriteCoordinatesFloor);
+        drawTile(canvas, x, y + 1, floorTile, spriteCoordinatesFloor);
       }
     }
     // 壁や他のオブジェクトのレイヤーを描画
@@ -289,6 +463,10 @@ class MyGame extends Game {
       }
     }
     drawNodeText(canvas);
+    drawEnemy(canvas, spritePlayer);
+    //drawPlayer(canvas, spritePlayer);
+    canvas.restore();
+    canvas.restore();
   }
 
   void drawTile(Canvas canvas, int x, int y, int tileType, Map<int, Vector2> coordinates) {
@@ -307,7 +485,7 @@ class MyGame extends Game {
   void drawText(Canvas canvas, String text, int x, int y) {
     final textSpan = TextSpan(
       text: text,
-      style: TextStyle(color: Color(0xFFCEF09D), fontSize: 24.0),
+      style: const TextStyle(color: Color(0xFFCEF09D), fontSize: 24.0),
     );
     final textPainter = TextPainter(
       text: textSpan,
@@ -316,7 +494,7 @@ class MyGame extends Game {
     textPainter.layout();
 
     // Calculate the adjusted x-coordinate to center the text
-    double centeredX = (x +(myTree.nodeWidth* 0.75) - (text.length/2) -1)*tileSize;
+    double centeredX = (x +(myTree.nodeWidth* 0.7) - (text.length/2) -2)*tileSize;
 
     final offset = Offset(centeredX, (y+2) * tileSize);
     textPainter.paint(canvas, offset);
@@ -325,24 +503,156 @@ class MyGame extends Game {
   void drawNodeText(Canvas canvas){
     myTree.nodeList.forEach((key, node){
       drawText(canvas, node.title, node.x, node.y);
+    });
+  }
+// Function to draw enemy on the canvas
+  void drawEnemy(Canvas canvas, Map<int, Vector2> coordinates) {
+    // Loop through each node in the tree
+    myTree.nodeList.forEach((key, node) {
+      // Define the tile types for each part of the enemy
+      List<List<int>> tileTypes = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+      ];
 
+      // Validate tileTypes
+      if (tileTypes.isEmpty) {
+        print("Error: tileTypes is not well-formed.");
+        return;
+      }
+
+      // Loop through the rows and columns of tile types
+      for (int row = 0; row < tileTypes.length; row++) {
+        for (int col = 0; col < tileTypes[row].length; col++) {
+          // Get the tile type and corresponding coordinate
+          final tileType = tileTypes[row][col];
+          final coord = coordinates[tileType] ?? Vector2.zero();
+          final int doordone = (node.status!="done") ? 0 : 12;
+          // Retrieve the sprite from the sprite sheet
+          //final sprite = playerSpriteSheet.getSprite(coord.x.toInt(), coord.y.toInt());
+          //final sprite = playerSpriteSheet.getSprite(0, 1);
+          //print("${node.title} ${coord.x.toInt()},${coord.y.toInt()}");
+          Sprite? sprite;
+
+          if(node.parent==null){
+            sprite = dragonSpriteSheet.getSprite(coord.x.toInt()+doordone+6, coord.y.toInt()+21);
+          }else {
+            int hash = node.title.hashCode % 3;
+            switch(hash) {
+              case 0:
+                sprite = warlockSpriteSheet.getSprite(coord.x.toInt()+doordone, coord.y.toInt() + 21);
+                break;
+              case 1:
+                sprite = skeletonSpriteSheet.getSprite(coord.x.toInt()+doordone+6, coord.y.toInt() + 21);
+                break;
+              case 2:
+                sprite = slimeSpriteSheet.getSprite(coord.x.toInt()+doordone, coord.y.toInt() + 21);
+                break;
+              default:
+                break;
+            }
+          }
+          // Handle if sprite is null
+          if (sprite == null) {
+            print("Error: Sprite not found.");
+            continue;
+          }
+
+          // Calculate the position for rendering the sprite based on node position and tile size
+          final dx = (node.x +row+(myTree.nodeWidth* 0.7)-2) * tileSize;
+          final dy = (node.y + col + 4) * tileSize;
+
+          // Render the sprite on the canvas
+          sprite.render(
+            canvas,
+            position: Vector2(dx, dy),
+            size: Vector2(tileSize, tileSize),
+          );
+        }
+      }
     });
   }
 
-  void drawEnemy(Canvas canvas){
+  void drawPlayer(Canvas canvas, Map<int, Vector2> coordinates) {
+    // Loop through each node in the tree
+    myTree.nodeList.forEach((key, node) {
+      // Define the tile types for each part of the enemy
+      List<List<int>> tileTypes = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+      ];
+//      if(node.status=="doing"){
+      if(node.status=="do"){
+        for (int row = 0; row < tileTypes.length; row++) {
+          for (int col = 0; col < tileTypes[row].length; col++) {
+            // Get the tile type and corresponding coordinate
+            final tileType = tileTypes[row][col];
+            final coord = coordinates[tileType] ?? Vector2.zero();
+            Sprite? sprite;
 
+            sprite = playerSpriteSheet.getSprite(coord.x.toInt(), coord.y.toInt());
+
+
+            // Calculate the position for rendering the sprite based on node position and tile size
+            final dx = (node.x +row+3) * tileSize;
+            final dy = (node.y + col + 4) * tileSize;
+
+            // Render the sprite on the canvas
+            sprite.render(
+              canvas,
+              position: Vector2(dx, dy),
+              size: Vector2(tileSize, tileSize),
+            );
+          }
+        }
+
+        const textSpan = TextSpan(
+          text: "you",
+          style: TextStyle(color: Color(0xFFCEF09D), fontSize: 24.0),
+        );
+        final textPainter = TextPainter(
+          text: textSpan,
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout();
+        final offset = Offset((node.x + 3) * tileSize , (node.y + 2) * tileSize);
+        textPainter.paint(canvas, offset);
+      }
+      // Validate tileTypes
+      if (tileTypes.isEmpty) {
+        print("Error: tileTypes is not well-formed.");
+        return;
+      }
+    });
   }
+
+  @override
+  void onPanUpdate(details) {
+    currentPanOffset += details.delta;
+  }
+
+  void onScaleUpdate(ScaleUpdateDetails details) {
+    currentScale = (startingScale * details.scale).clamp(0.5, 2.0);
+    currentPanOffset += details.focalPoint - details.localFocalPoint; // Update pan offset
+    print("Current Scale: $currentScale");
+  }
+
+
+  void onScaleStart(ScaleStartDetails details) {
+    print("Scale Started");
+    startingScale = currentScale;
+  }
+
+  void onScaleEnd(ScaleEndDetails details) {
+    print("Scale Ended");
+  }
+
+
 
   @override
   void update(double dt) {
     // 経過時間にdt（デルタタイム）を加算
-    elapsedTime += dt;
-
-    // 0.2秒以上経過した場合、スプライトを更新
-    if (elapsedTime >= 0.2) {
-      currentSpriteIndex = (currentSpriteIndex + 1) % playerSprites.length;
-      elapsedTime = 0.0; // 経過時間をリセット
-    }
-    // Game logic (omitted here)
   }
 }
