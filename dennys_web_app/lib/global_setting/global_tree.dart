@@ -65,7 +65,7 @@ class GlobalTree {
   //9/2以降追加分
 
   int nodeWidth = 20;
-  int nodeHeight = 7;
+  int nodeHeight = 9;
   int horizontalSpacing = 60;
   int verticalSpacing = 5;
   int additionalParentChildDistance = 10;
@@ -93,27 +93,16 @@ class GlobalTree {
         _tree = tree,
         _tasks = tasks;
 
-  static void initialize({
+  static Future<void> initialize({
     required String title,
-    required Map<String, List<int>> tree,
-    required Map<String, String> tasks,
+    Map<String, List<int>>? tree,
+    Map<String, String>? tasks,
     bool isAsync = false,
-  }) {
+  }) async {
     if (_singleton != null) return;
 
-    if (isAsync) {
-      // 非同期の初期化ロジック
-      _initializeAsync(title).then((result) {
-        _singleton = GlobalTree._internal(
-          title: title,
-          tree: result['tree'],
-          tasks: result['tasks'],
-        );
-        _populateNodeListAndEdges();
-        _singleton!.calculateMaxMapWidth();
-      });
-    } else {
-      // 同期の初期化ロジック
+    if (tree != null && tasks != null) {
+      // Initialize using provided tree and tasks
       _singleton = GlobalTree._internal(
         title: title,
         tree: tree,
@@ -121,8 +110,26 @@ class GlobalTree {
       );
       _populateNodeListAndEdges();
       _singleton!.calculateMaxMapWidth();
+    } else if (isAsync) {
+      // Fetch tree and tasks asynchronously
+      Map<String, dynamic> result = await generateTaskTree(title);
+
+      if (result.containsKey('tree') && result.containsKey('tasks')) {
+        _singleton = GlobalTree._internal(
+          title: title,
+          tree: result['tree'],
+          tasks: result['tasks'],
+        );
+        _populateNodeListAndEdges();
+        _singleton!.calculateMaxMapWidth();
+      } else {
+        print("Error: Invalid result from generateTaskTree.");
+      }
+    } else {
+      throw Exception("Provide tree and tasks or set isAsync to true.");
     }
   }
+
 
   static Future<Map<String, dynamic>> _initializeAsync(String title) async {
     Map<String, dynamic> result = await generateTaskTree(title);
@@ -139,9 +146,9 @@ class GlobalTree {
         status: "do",
         description: "説明",
       );
-      _singleton!.nodeWidth = _singleton!.maxTexLength*4;
-      _singleton!.nodeHeight = _singleton!.maxTexLength;
-      _singleton!.horizontalSpacing = _singleton!.maxTexLength*6;
+      _singleton!.nodeWidth = _singleton!.maxTexLength*2+6;
+      //_singleton!.nodeHeight = _singleton!.maxTexLength;
+      _singleton!.horizontalSpacing = _singleton!.maxTexLength*4;
     }
 
     // Now set the parent-child relationships
@@ -340,12 +347,10 @@ class GlobalTree {
         await titleRef.set({
           'title': title,
         });
-
         // そのドキュメント内にtasksとtreeサブコレクションを追加
         await _firestore.collection('users').doc(user.uid).collection(title).doc('tasks').set({
           'data': tasks,
         });
-
         await _firestore.collection('users').doc(user.uid).collection(title).doc('tree').set({
           'data': tree,
         });
