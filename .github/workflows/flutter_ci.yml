@@ -5,7 +5,10 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    name: flutter_test
+    defaults:
+      run:
+        working-directory: dennys_web_app
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-java@v1
