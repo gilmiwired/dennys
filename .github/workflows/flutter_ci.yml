@@ -12,8 +12,12 @@ jobs:
         with:
           flutter-version: '3.0.5'
       - name: Install dependencies
+        working-directory: ./dennys_web_app
         run: flutter pub get
       - name: Run flutter format
+        working-directory: ./dennys_web_app
         run: flutter format --set-exit-if-changed .
       - name: Run flutter analyze
+        working-directory: ./dennys_web_app
         run: flutter analyze
+
