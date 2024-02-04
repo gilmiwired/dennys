@@ -8,4 +8,3 @@ class UserModel with _$UserModel {
     String? email,
   }) = _UserModel;
 }
-

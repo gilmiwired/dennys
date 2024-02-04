@@ -19,18 +19,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text);
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text);
         print("Sign up successful for email: ${_emailController.text}");
-        UserModel userModel = UserModel(uid: userCredential.user!.uid, email: userCredential.user!.email);
+        UserModel userModel = UserModel(
+            uid: userCredential.user!.uid, email: userCredential.user!.email);
 
         print("UserModel: uid=${userModel.uid}, email=${userModel.email}");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Successfully Signed Up!')),
         );
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => WelcomeScreen(user: userCredential.user)));
-
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    WelcomeScreen(user: userCredential.user)));
       } catch (e) {
         print("Sign up failed with error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -70,9 +75,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildInputField('Email', 'Enter your email', _emailController),
+                          _buildInputField(
+                              'Email', 'Enter your email', _emailController),
                           SizedBox(height: 20),
-                          _buildInputField('Password', 'Enter your password', _passwordController),
+                          _buildInputField('Password', 'Enter your password',
+                              _passwordController),
                           SizedBox(height: 40),
                           _buildSignUpButton(),
                         ],
@@ -107,11 +114,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            GestureDetector(  // GestureDetectorを追加
+            GestureDetector(
+              // GestureDetectorを追加
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignInScreen()),  // SignInScreenに遷移
+                  MaterialPageRoute(
+                      builder: (context) => SignInScreen()), // SignInScreenに遷移
                 );
               },
               child: const Text(
@@ -130,9 +139,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildInputField(String label, String hint, TextEditingController controller) {
+  Widget _buildInputField(
+      String label, String hint, TextEditingController controller) {
     return TextField(
-      controller: controller,  // この行を追加
+      controller: controller, // この行を追加
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
@@ -155,10 +165,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-
   Widget _buildSignUpButton() {
     return ElevatedButton(
-      onPressed: _signUp,  // ここで_signUpメソッドを呼び出します
+      onPressed: _signUp, // ここで_signUpメソッドを呼び出します
       style: ElevatedButton.styleFrom(
         primary: Color(0xFF102425),
         padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -177,5 +186,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
-
 }
