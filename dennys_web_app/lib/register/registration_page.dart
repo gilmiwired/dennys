@@ -19,8 +19,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
       _formKey.currentState!.save();
       print("Attempting to register with email: ${_emailController.text}");
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text);
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text);
         print("Registration successful for email: ${_emailController.text}");
 
         // 登録が成功したら、UserModelにUIDを保存
@@ -40,7 +42,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   void saveUserToModel(User user) {
     final userModel = UserModel(uid: user.uid, email: user.email);
-    print("UserModel saved with UID: ${userModel.uid} and Email: ${userModel.email}");
+    print(
+        "UserModel saved with UID: ${userModel.uid} and Email: ${userModel.email}");
   }
 
   @override

@@ -27,7 +27,10 @@ class _SignInScreenState extends State<SignInScreen> {
           SnackBar(content: Text('Successfully Signed In!')),
         );
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => WelcomeScreen(user: userCredential.user)));
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    WelcomeScreen(user: userCredential.user)));
       } catch (e) {
         print("Sign in failed with error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -67,9 +70,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildInputField('Email', 'Enter your email', _emailController),
+                          _buildInputField(
+                              'Email', 'Enter your email', _emailController),
                           SizedBox(height: 20),
-                          _buildInputField('Password', 'Enter your password', _passwordController),
+                          _buildInputField('Password', 'Enter your password',
+                              _passwordController),
                           SizedBox(height: 40),
                           _buildSignInButton(),
                         ],
@@ -104,11 +109,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 fontWeight: FontWeight.w900,
               ),
             ),
-            GestureDetector(  // GestureDetectorを追加
+            GestureDetector(
+              // GestureDetectorを追加
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignUpScreen()),  // SignInScreenに遷移
+                  MaterialPageRoute(
+                      builder: (context) => SignUpScreen()), // SignInScreenに遷移
                 );
               },
               child: const Text(
@@ -127,10 +134,12 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildInputField(String label, String hint, TextEditingController controller, {bool isPassword = false}) {
+  Widget _buildInputField(
+      String label, String hint, TextEditingController controller,
+      {bool isPassword = false}) {
     return TextField(
       controller: controller,
-      obscureText: isPassword,  // パスワードフィールドの場合、テキストを隠します
+      obscureText: isPassword, // パスワードフィールドの場合、テキストを隠します
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(
@@ -153,10 +162,9 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-
   Widget _buildSignInButton() {
     return ElevatedButton(
-      onPressed: _signIn,  // ここで_signUpメソッドを呼び出します
+      onPressed: _signIn, // ここで_signUpメソッドを呼び出します
       style: ElevatedButton.styleFrom(
         primary: Color(0xFF102425),
         padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),

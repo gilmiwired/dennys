@@ -65,11 +65,7 @@ class _UserModelPageState extends State<UserModelPage> {
             ElevatedButton(
               onPressed: () async {
                 String title = _titleController.text;
-                GlobalTree.initialize(
-                    title: title,
-                    tree: tree,
-                    tasks: tasks
-                );
+                GlobalTree.initialize(title: title, tree: tree, tasks: tasks);
                 var globalTree = GlobalTree.instance;
                 await globalTree.addDataToFirestore(widget.user);
                 ScaffoldMessenger.of(context).showSnackBar(
