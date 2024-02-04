@@ -9,7 +9,7 @@ import 'package:dennys_web_app/Screen/Home.dart';
 
 import 'package:dennys_web_app/game/test_game.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -46,7 +46,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _textController.dispose();  // Don't forget to dispose the controller when not in use
+    _textController
+        .dispose(); // Don't forget to dispose the controller when not in use
     super.dispose();
   }
 
@@ -65,7 +66,6 @@ class _HomePageState extends State<HomePage> {
     print("Input Value: $inputValue");
     // You can call any other specific function here using the inputValue
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +149,6 @@ class _HomePageState extends State<HomePage> {
               child: const Text('Game'),
             ),
 
-
             // Step 2: Add the TextField to the Column
             Padding(
               padding: const EdgeInsets.all(10.0),
@@ -167,7 +166,6 @@ class _HomePageState extends State<HomePage> {
               onPressed: _onButtonPressed,
               child: const Text('Submit Text'),
             ),
-
           ],
         ),
       ),
