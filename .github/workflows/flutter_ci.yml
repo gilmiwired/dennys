@@ -1,18 +1,6 @@
 name: Flutter CI
 
-on:
-  pull_request:
-    branches:
-      - develop
-    paths:
-      - "dennys_web_app/**"
-      - "!dennys_web_app/**.md"
-  push:
-    branches:
-      - develop
-    paths:
-      - "dennys_web_app/**"
-      - "!dennys_web_app/**.md"
+on: [push, pull_request]
 
 jobs:
   flutter-lint-format:
