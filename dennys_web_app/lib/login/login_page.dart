@@ -22,7 +22,8 @@ class _LoginPageState extends State<LoginPage> {
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
             email: _emailController.text, password: _passwordController.text);
         print("Login successful for email: ${_emailController.text}");
-        UserModel userModel = UserModel(uid: userCredential.user!.uid, email: userCredential.user!.email);
+        UserModel userModel = UserModel(
+            uid: userCredential.user!.uid, email: userCredential.user!.email);
 
         print("UserModel: uid=${userModel.uid}, email=${userModel.email}");
 
@@ -77,14 +78,16 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: _login,
                 child: Text('Login'),
               ),
-              SizedBox(height: 16),  // 新しく追加
+              SizedBox(height: 16), // 新しく追加
               TextButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegistrationPage()));
                 },
                 child: Text('アカウントがない場合はこちら'),
               ),
-
             ],
           ),
         ),

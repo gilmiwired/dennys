@@ -14,7 +14,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dennys_web_app/profile/user_data.dart';
 import 'dart:math' as math;
 
-
 class BuildGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -169,9 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-
-
-
 class MyGame extends Game {
   final tileSize = 16.0;
 
@@ -189,14 +185,19 @@ class MyGame extends Game {
 
   //木関連
   GlobalTree myTree = GlobalTree.instance;
-  late List<List<int>> dynamicMap = generateCustomMatrix(myTree.maxMapHeight+(myTree.horizontalSpacing*5), myTree.maxMapWidth+myTree.nodeWidth,0);
-  late final int _maxWidth=myTree.maxMapHeight+(myTree.horizontalSpacing*(myTree.maxRank+3));
-  late final int maxHeight=myTree.maxMapWidth+myTree.nodeWidth+myTree.additionalParentChildDistance+myTree.verticalSpacing;
+  late List<List<int>> dynamicMap = generateCustomMatrix(
+      myTree.maxMapHeight + (myTree.horizontalSpacing * 5),
+      myTree.maxMapWidth + myTree.nodeWidth,
+      0);
+  late final int _maxWidth =
+      myTree.maxMapHeight + (myTree.horizontalSpacing * (myTree.maxRank + 3));
+  late final int maxHeight = myTree.maxMapWidth +
+      myTree.nodeWidth +
+      myTree.additionalParentChildDistance +
+      myTree.verticalSpacing;
   double startingScale = 1.0;
   double currentScale = 1.0;
   Offset currentPanOffset = Offset.zero;
-
-
 
   //フラグ
   MyGame() {
@@ -206,11 +207,18 @@ class MyGame extends Game {
 
   int get mapWidth => _mapWidth;
   int get mapHeight => _mapHeight;
-  get _mapWidth => (myTree.maxMapHeight+(myTree.horizontalSpacing*5))*tileSize;
-  get _mapHeight => (myTree.maxMapWidth+myTree.nodeWidth+myTree.additionalParentChildDistance+myTree.verticalSpacing)*tileSize;
+  get _mapWidth =>
+      (myTree.maxMapHeight + (myTree.horizontalSpacing * 5)) * tileSize;
+  get _mapHeight =>
+      (myTree.maxMapWidth +
+          myTree.nodeWidth +
+          myTree.additionalParentChildDistance +
+          myTree.verticalSpacing) *
+      tileSize;
 
   List<List<int>> generateMapData() {
-    print("Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}");
+    print(
+        "Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}");
     print("Matrix dimensions: ${dynamicMap.length}x${dynamicMap[0].length}");
 
     myTree.nodeList.forEach((key, node) {
@@ -238,7 +246,7 @@ class MyGame extends Game {
         // Loop through each child and update min and max y values and nodes
         if (node.children != null) {
           node.children!.forEach((child) {
-            if (minY== null || child.y < minY!) {
+            if (minY == null || child.y < minY!) {
               minY = child.y;
               minNode = child;
             }
@@ -258,15 +266,13 @@ class MyGame extends Game {
           print("Node with key $key has no children, so yLength is undefined.");
         }
         print('${node.rank} maxRank ${myTree.maxRank}');
-
       }
     });
 
-    List<int> vertical = [2,1,15,14,13];
-    List<int> horizontal = [8,15,7];
-    List<int> verticalLeft = [16,17,15,18,19];
-    List<int> verticalRight = [22,23,15,21,20];
-
+    List<int> vertical = [2, 1, 15, 14, 13];
+    List<int> horizontal = [8, 15, 7];
+    List<int> verticalLeft = [16, 17, 15, 18, 19];
+    List<int> verticalRight = [22, 23, 15, 21, 20];
 
     //エッジ作成
     myTree.nodeList.forEach((key, node) {
@@ -280,7 +286,7 @@ class MyGame extends Game {
         // Loop through each child and update min and max y values and nodes
         if (node.children != null) {
           node.children!.forEach((child) {
-            if (minY== null || child.y < minY!) {
+            if (minY == null || child.y < minY!) {
               minY = child.y;
               minNode = child;
             }
@@ -302,65 +308,72 @@ class MyGame extends Game {
         print('${node.rank} maxRank ${myTree.maxRank}');
         */
 
-        if(node.rank != myTree.maxRank+1 && node.countChildren()!=0){
+        if (node.rank != myTree.maxRank + 1 && node.countChildren() != 0) {
           //左道
           //done
           node.children!.forEach((child) {
             int xLeftEdge = child.y + 2;
-            int yLeftEdge = child.x + myTree.nodeWidth + (myTree.horizontalSpacing~/2) - 1;
-            int endRight =child.x+myTree.nodeWidth-1;
+            int yLeftEdge = child.x +
+                myTree.nodeWidth +
+                (myTree.horizontalSpacing ~/ 2) -
+                1;
+            int endRight = child.x + myTree.nodeWidth - 1;
 
             for (int j = 0; j < 5; j++) {
               dynamicMap[xLeftEdge + j][yLeftEdge] = 4 + j * 2;
-              dynamicMap[xLeftEdge+j][endRight] = verticalLeft[j];
+              dynamicMap[xLeftEdge + j][endRight] = verticalLeft[j];
             }
-            for(int i = 1; i < (myTree.horizontalSpacing ~/ 2); i++){
+            for (int i = 1; i < (myTree.horizontalSpacing ~/ 2); i++) {
               for (int j = 0; j < 5; j++) {
-                dynamicMap[xLeftEdge+j][yLeftEdge-i] = vertical[j];
+                dynamicMap[xLeftEdge + j][yLeftEdge - i] = vertical[j];
               }
             }
           });
           //縦道
           //done
 
-          int xMiddleEdge = minNode!.y+4;
-          int yMiddleEdge = node.x-(myTree.horizontalSpacing~/2);
+          int xMiddleEdge = minNode!.y + 4;
+          int yMiddleEdge = node.x - (myTree.horizontalSpacing ~/ 2);
 
-          dynamicMap[xMiddleEdge].setRange(yMiddleEdge-3, yMiddleEdge, [-1,15,8]);
-          dynamicMap[xMiddleEdge+1].setRange(yMiddleEdge-3, yMiddleEdge, [21,15,8]);
-          dynamicMap[xMiddleEdge+2].setRange(yMiddleEdge-3, yMiddleEdge, [20,15,8]);
+          dynamicMap[xMiddleEdge]
+              .setRange(yMiddleEdge - 3, yMiddleEdge, [-1, 15, 8]);
+          dynamicMap[xMiddleEdge + 1]
+              .setRange(yMiddleEdge - 3, yMiddleEdge, [21, 15, 8]);
+          dynamicMap[xMiddleEdge + 2]
+              .setRange(yMiddleEdge - 3, yMiddleEdge, [20, 15, 8]);
 
-          for(int i = xMiddleEdge+3; i<maxNode!.y+4; i++){
-            if(dynamicMap[i][yMiddleEdge-3]==2){
-
-              dynamicMap[i].setRange(yMiddleEdge-3, yMiddleEdge, [22,15,8]);
-              dynamicMap[i+1].setRange(yMiddleEdge-3, yMiddleEdge, [23,15,8]);
-              if(i+2<maxNode!.y+4) {
-                dynamicMap[i + 2].setRange(yMiddleEdge - 3, yMiddleEdge, [24, 15, 8]);
-                dynamicMap[i + 3].setRange(yMiddleEdge - 3, yMiddleEdge, [21, 15, 8]);
-                dynamicMap[i + 4].setRange(yMiddleEdge - 3, yMiddleEdge, [20, 15, 8]);
+          for (int i = xMiddleEdge + 3; i < maxNode!.y + 4; i++) {
+            if (dynamicMap[i][yMiddleEdge - 3] == 2) {
+              dynamicMap[i].setRange(yMiddleEdge - 3, yMiddleEdge, [22, 15, 8]);
+              dynamicMap[i + 1]
+                  .setRange(yMiddleEdge - 3, yMiddleEdge, [23, 15, 8]);
+              if (i + 2 < maxNode!.y + 4) {
+                dynamicMap[i + 2]
+                    .setRange(yMiddleEdge - 3, yMiddleEdge, [24, 15, 8]);
+                dynamicMap[i + 3]
+                    .setRange(yMiddleEdge - 3, yMiddleEdge, [21, 15, 8]);
+                dynamicMap[i + 4]
+                    .setRange(yMiddleEdge - 3, yMiddleEdge, [20, 15, 8]);
                 i = i + 4;
-              }else{
+              } else {
                 i = i + 2;
               }
-
-            }
-            else {
-              for(int j=0;j<3;j++) {
-                dynamicMap[i][yMiddleEdge-j-1] = horizontal[j];
+            } else {
+              for (int j = 0; j < 3; j++) {
+                dynamicMap[i][yMiddleEdge - j - 1] = horizontal[j];
               }
             }
           }
           //~done
 
           //右道
-          for(int j=0;j<5;j++) {
-            dynamicMap[node.y+2+j][node.x] = verticalRight[j];
-            dynamicMap[node.y+2+j][yMiddleEdge-1] = verticalLeft[j];
+          for (int j = 0; j < 5; j++) {
+            dynamicMap[node.y + 2 + j][node.x] = verticalRight[j];
+            dynamicMap[node.y + 2 + j][yMiddleEdge - 1] = verticalLeft[j];
           }
-          for(int i = 1; i<(myTree.horizontalSpacing ~/ 2) + 1;i++){
-            for(int j=0;j<5;j++) {
-              dynamicMap[node.y+2+j][node.x-i] = vertical[j];
+          for (int i = 1; i < (myTree.horizontalSpacing ~/ 2) + 1; i++) {
+            for (int j = 0; j < 5; j++) {
+              dynamicMap[node.y + 2 + j][node.x - i] = vertical[j];
             }
           }
         }
@@ -469,7 +482,8 @@ class MyGame extends Game {
     canvas.restore();
   }
 
-  void drawTile(Canvas canvas, int x, int y, int tileType, Map<int, Vector2> coordinates) {
+  void drawTile(Canvas canvas, int x, int y, int tileType,
+      Map<int, Vector2> coordinates) {
     final coord = coordinates[tileType] ?? Vector2.zero();
     final sprite = spriteSheet.getSprite(coord.x.toInt(), coord.y.toInt());
     final dx = x * tileSize;
@@ -494,17 +508,19 @@ class MyGame extends Game {
     textPainter.layout();
 
     // Calculate the adjusted x-coordinate to center the text
-    double centeredX = (x +(myTree.nodeWidth* 0.7) - (text.length/2) -2)*tileSize;
+    double centeredX =
+        (x + (myTree.nodeWidth * 0.7) - (text.length / 2) - 2) * tileSize;
 
-    final offset = Offset(centeredX, (y+2) * tileSize);
+    final offset = Offset(centeredX, (y + 2) * tileSize);
     textPainter.paint(canvas, offset);
   }
 
-  void drawNodeText(Canvas canvas){
-    myTree.nodeList.forEach((key, node){
+  void drawNodeText(Canvas canvas) {
+    myTree.nodeList.forEach((key, node) {
       drawText(canvas, node.title, node.x, node.y);
     });
   }
+
 // Function to draw enemy on the canvas
   void drawEnemy(Canvas canvas, Map<int, Vector2> coordinates) {
     // Loop through each node in the tree
@@ -528,26 +544,30 @@ class MyGame extends Game {
           // Get the tile type and corresponding coordinate
           final tileType = tileTypes[row][col];
           final coord = coordinates[tileType] ?? Vector2.zero();
-          final int doordone = (node.status!="done") ? 0 : 12;
+          final int doordone = (node.status != "done") ? 0 : 12;
           // Retrieve the sprite from the sprite sheet
           //final sprite = playerSpriteSheet.getSprite(coord.x.toInt(), coord.y.toInt());
           //final sprite = playerSpriteSheet.getSprite(0, 1);
           //print("${node.title} ${coord.x.toInt()},${coord.y.toInt()}");
           Sprite? sprite;
 
-          if(node.parent==null){
-            sprite = dragonSpriteSheet.getSprite(coord.x.toInt()+doordone+6, coord.y.toInt()+21);
-          }else {
+          if (node.parent == null) {
+            sprite = dragonSpriteSheet.getSprite(
+                coord.x.toInt() + doordone + 6, coord.y.toInt() + 21);
+          } else {
             int hash = node.title.hashCode % 3;
-            switch(hash) {
+            switch (hash) {
               case 0:
-                sprite = warlockSpriteSheet.getSprite(coord.x.toInt()+doordone, coord.y.toInt() + 21);
+                sprite = warlockSpriteSheet.getSprite(
+                    coord.x.toInt() + doordone, coord.y.toInt() + 21);
                 break;
               case 1:
-                sprite = skeletonSpriteSheet.getSprite(coord.x.toInt()+doordone+6, coord.y.toInt() + 21);
+                sprite = skeletonSpriteSheet.getSprite(
+                    coord.x.toInt() + doordone + 6, coord.y.toInt() + 21);
                 break;
               case 2:
-                sprite = slimeSpriteSheet.getSprite(coord.x.toInt()+doordone, coord.y.toInt() + 21);
+                sprite = slimeSpriteSheet.getSprite(
+                    coord.x.toInt() + doordone, coord.y.toInt() + 21);
                 break;
               default:
                 break;
@@ -560,7 +580,7 @@ class MyGame extends Game {
           }
 
           // Calculate the position for rendering the sprite based on node position and tile size
-          final dx = (node.x +row+(myTree.nodeWidth* 0.7)-2) * tileSize;
+          final dx = (node.x + row + (myTree.nodeWidth * 0.7) - 2) * tileSize;
           final dy = (node.y + col + 4) * tileSize;
 
           // Render the sprite on the canvas
@@ -584,7 +604,7 @@ class MyGame extends Game {
         [7, 8, 9]
       ];
 //      if(node.status=="doing"){
-      if(node.status=="do"){
+      if (node.status == "do") {
         for (int row = 0; row < tileTypes.length; row++) {
           for (int col = 0; col < tileTypes[row].length; col++) {
             // Get the tile type and corresponding coordinate
@@ -592,11 +612,11 @@ class MyGame extends Game {
             final coord = coordinates[tileType] ?? Vector2.zero();
             Sprite? sprite;
 
-            sprite = playerSpriteSheet.getSprite(coord.x.toInt(), coord.y.toInt());
-
+            sprite =
+                playerSpriteSheet.getSprite(coord.x.toInt(), coord.y.toInt());
 
             // Calculate the position for rendering the sprite based on node position and tile size
-            final dx = (node.x +row+3) * tileSize;
+            final dx = (node.x + row + 3) * tileSize;
             final dy = (node.y + col + 4) * tileSize;
 
             // Render the sprite on the canvas
@@ -617,7 +637,7 @@ class MyGame extends Game {
           textDirection: TextDirection.ltr,
         );
         textPainter.layout();
-        final offset = Offset((node.x + 3) * tileSize , (node.y + 2) * tileSize);
+        final offset = Offset((node.x + 3) * tileSize, (node.y + 2) * tileSize);
         textPainter.paint(canvas, offset);
       }
       // Validate tileTypes
@@ -635,10 +655,10 @@ class MyGame extends Game {
 
   void onScaleUpdate(ScaleUpdateDetails details) {
     currentScale = (startingScale * details.scale).clamp(0.5, 2.0);
-    currentPanOffset += details.focalPoint - details.localFocalPoint; // Update pan offset
+    currentPanOffset +=
+        details.focalPoint - details.localFocalPoint; // Update pan offset
     print("Current Scale: $currentScale");
   }
-
 
   void onScaleStart(ScaleStartDetails details) {
     print("Scale Started");
@@ -648,8 +668,6 @@ class MyGame extends Game {
   void onScaleEnd(ScaleEndDetails details) {
     print("Scale Ended");
   }
-
-
 
   @override
   void update(double dt) {

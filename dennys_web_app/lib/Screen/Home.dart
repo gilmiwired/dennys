@@ -21,12 +21,11 @@ class FigmaToCodeApp extends StatelessWidget {
         brightness: Brightness.dark,
         primaryColor: const Color(0xFF102425),
         colorScheme: ThemeData.dark().colorScheme.copyWith(
-          secondary: const Color(0xFFBE60AE),
-        ),
+              secondary: const Color(0xFFBE60AE),
+            ),
         scaffoldBackgroundColor: const Color(0xFF102425),
         fontFamily: 'Inter',
       ),
-
       home: const Scaffold(body: Home()),
     );
   }
@@ -123,9 +122,6 @@ class CustomHeader extends StatelessWidget {
     );
   }
 
-
-
-
   @override
   @override
   Widget build(BuildContext context) {
@@ -221,7 +217,6 @@ class ModernDialog extends StatelessWidget {
   }
 }
 
-
 class MainContent extends StatelessWidget {
   const MainContent({Key? key}) : super(key: key);
   Widget _buildOriginalText(double maxWidth) {
@@ -296,13 +291,13 @@ class MainContent extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
     // 画面の横幅に応じて3つのサイズを判定
-    if (width > 800) { // 大のサイズ
+    if (width > 800) {
+      // 大のサイズ
       return Container(
         width: width,
         color: const Color(0xFF102425), // ここを変更
@@ -315,7 +310,8 @@ class MainContent extends StatelessWidget {
           ],
         ),
       );
-    } else { // 中、小のサイズ
+    } else {
+      // 中、小のサイズ
       return SingleChildScrollView(
         child: Container(
           width: width,
@@ -332,7 +328,6 @@ class MainContent extends StatelessWidget {
     }
   }
 }
-
 
 class Frame12 extends StatefulWidget {
   const Frame12({Key? key}) : super(key: key);
@@ -360,34 +355,27 @@ class _Frame12State extends State<Frame12> {
 
     return isOuterSquare
         ? ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: const Color(0xFF723873).withOpacity(0.7),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-        ),
-      ),
-    )
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF723873).withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+            ),
+          )
         : Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: const Color(0xFF723873),
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-    );
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: const Color(0xFF723873),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+          );
   }
-
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -402,13 +390,16 @@ class _Frame12State extends State<Frame12> {
     double totalWidth = 0;
     int currentNumberOfSquares = numberOfSquares;
     for (int i = 0; i < currentNumberOfSquares; i++) {
-      double offsetSpacing = min(spacing * (1 + (i - centerSquare).abs() * 0.15), maxSpacing);
+      double offsetSpacing =
+          min(spacing * (1 + (i - centerSquare).abs() * 0.15), maxSpacing);
       totalWidth += squareSize + offsetSpacing;
     }
 
     while (totalWidth > width && currentNumberOfSquares > 0) {
       currentNumberOfSquares--;
-      double offsetSpacing = min(spacing * (1 + (currentNumberOfSquares - centerSquare).abs() * 0.15), maxSpacing);
+      double offsetSpacing = min(
+          spacing * (1 + (currentNumberOfSquares - centerSquare).abs() * 0.15),
+          maxSpacing);
       totalWidth -= (squareSize + offsetSpacing);
     }
 
@@ -418,7 +409,8 @@ class _Frame12State extends State<Frame12> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(currentNumberOfSquares, (index) {
-          double offsetSpacing = min(spacing * (1 + (index - centerSquare).abs() * 0.15), maxSpacing);
+          double offsetSpacing = min(
+              spacing * (1 + (index - centerSquare).abs() * 0.15), maxSpacing);
           return Padding(
             padding: EdgeInsets.only(
               top: _topOffsets[index % _topOffsets.length] * squareSize,
