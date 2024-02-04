@@ -19,4 +19,4 @@ jobs:
         channel: 'stable'
     - run: flutter pub get
     - name: Execute Flutter Test
-      run: flutter test -v
+      run: flutter test -v dennys_web_app
