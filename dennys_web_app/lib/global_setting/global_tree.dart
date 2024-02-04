@@ -81,6 +81,7 @@ class GlobalTree {
     }
     return _singleton!;
   }
+
   // プライベートコンストラクタ
   GlobalTree._internal({
     required String title,
@@ -265,6 +266,7 @@ class GlobalTree {
       return {};
     }
   }
+
   //ツリー生成
   static Future<Map<String, dynamic>> generateTaskTree(String userGoal) async {
     //userGoalに対するAIの応答を返す。（今のところは固定でtree,tasks生成のみ。そのうちフィードバックとかできるようにする。）
@@ -456,6 +458,7 @@ class GlobalTree {
       maxMapHeight = node.y + nodeHeight;
     }
   }
+
   //割り当てで使うやつ
   int subtreeHeight(Node node) {
     if (node.children!.isEmpty) {
