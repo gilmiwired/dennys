@@ -58,8 +58,6 @@ class GlobalTree {
   final Set<String> _collectedChildNodes = {};
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  //9/2以降追加分
-
   int nodeWidth = 20;
   int nodeHeight = 9;
   int horizontalSpacing = 60;
@@ -99,7 +97,6 @@ class GlobalTree {
     if (_singleton != null) return;
 
     if (tree != null && tasks != null) {
-      // Initialize using provided tree and tasks
       _singleton = GlobalTree._internal(
         title: title,
         tree: tree,
@@ -108,7 +105,6 @@ class GlobalTree {
       _populateNodeListAndEdges();
       _singleton!.calculateMaxMapWidth();
     } else if (isAsync) {
-      // Fetch tree and tasks asynchronously
       Map<String, dynamic> result = await generateTaskTree(title);
 
       if (result.containsKey('tree') && result.containsKey('tasks')) {
@@ -133,14 +129,13 @@ class GlobalTree {
   }
 
   static void _populateNodeListAndEdges() {
-    // First, create all Node objects without setting their children
     for (var entry in _singleton!._tasks.entries) {
       _singleton!.maxTexLength =
           max(_singleton!.maxTexLength, entry.value.length);
       _singleton!._nodeList[entry.key] = Node(
         title: entry.value,
-        parent: null, // Set parent to null initially
-        children: [], // Initialize children as an empty list
+        parent: null,
+        children: [],
         status: "do",
         description: "説明",
       );
@@ -149,29 +144,28 @@ class GlobalTree {
       _singleton!.horizontalSpacing = _singleton!.maxTexLength * 4;
     }
 
-    // Now set the parent-child relationships
     for (var entry in _singleton!._tasks.entries) {
       Node parentNode =
-          _singleton!._nodeList[entry.key]!; // Retrieve the parent Node
-      List<Node> childrenNodes = []; // To store the children Nodes
+          _singleton!._nodeList[entry.key]!;
+      List<Node> childrenNodes = [];
 
       List<String>? childrenKeys =
           _singleton!._tree[entry.key]?.map((e) => e.toString()).toList();
       if (childrenKeys != null) {
         for (var childKey in childrenKeys) {
           Node? childNode =
-              _singleton!._nodeList[childKey]; // Retrieve the child Node
+              _singleton!._nodeList[childKey];
           if (childNode != null) {
             childrenNodes.add(childNode);
-            childNode.parent = parentNode; // Set the parent of the child Node
+            childNode.parent = parentNode;
             childNode.rank = parentNode.rank +
-                1; // Update the rank based on the parent's rank
+                1;
           }
         }
       }
 
       parentNode.children =
-          childrenNodes; // Set the children of the parent Node
+          childrenNodes;
     }
   }
 
@@ -196,7 +190,6 @@ class GlobalTree {
       {bool insertAsChild = false, List<String>? newChildrenIDs}) {
     Node? parentNode = _nodeList[parentID];
     if (parentNode == null) {
-      // Handle error: parent node not found
       return;
     }
 
@@ -239,7 +232,7 @@ class GlobalTree {
   static Map<String, dynamic> extractTaskTree(String aiResponse) {
     //応答をtree,tasksに整理
     String validJsonString =
-        aiResponse.replaceAll("'", '"'); //正規表現によるシングルクォートをダブルクォートに変換
+        aiResponse.replaceAll("'", '"');
     final RegExp pattern = RegExp(r"(\{.*\})");
     final Match? match = pattern.firstMatch(validJsonString);
 
@@ -350,7 +343,6 @@ class GlobalTree {
 
       // タイトルが存在しない場合のみ追加
       if (snapshot.docs.isEmpty) {
-        // タイトル用の新しいドキュメントを作成
         DocumentReference titleRef = _firestore
             .collection('users')
             .doc(user.uid)
@@ -433,14 +425,12 @@ class GlobalTree {
       maxRank = node.rank;
     }
 
-    // First, assign coordinates to the children
     if (node.children != null) {
       for (Node child in node.children!) {
         assign_Coordinates(child);
       }
     }
 
-    // Calculate the new y-coordinate for the node based on its children
     int avgChildY = node.children!.fold(
             0, (int prev, Node child) => prev + child.y + nodeHeight ~/ 2) ~/
         node.children!.length;
@@ -448,7 +438,6 @@ class GlobalTree {
     node.x =
         max(0, maxMapWidth - (node.rank * (nodeWidth + horizontalSpacing)));
 
-    // Update the lowestY values to prevent overlap with other subtrees
     int totalSubtreeHeight = subtreeHeight(node);
     lowestY[node.rank] =
         max(lowestY[node.rank] ?? 0, node.y + totalSubtreeHeight);
