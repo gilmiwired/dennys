@@ -22,7 +22,6 @@ class Node {
     required this.status,
     required this.description,
   }) {
-    // Initialize rank based on parent
     rank = (parent != null) ? parent!.rank + 1 : 0;
   }
 
