@@ -5,13 +5,26 @@ import 'package:dennys_web_app/login/login_page.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
 import 'package:dennys_web_app/profile/user_data.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:dennys_web_app/Screen/Home.dart';
-
 import 'package:dennys_web_app/game/test_game.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await dotenv.load(fileName: ".env"); // .envファイルを読み込む
+
+  // 環境変数からFirebase設定を読み込む
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['FIREBASE_API_KEY']!,
+      authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN']!,
+      projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+      storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+      messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+      appId: dotenv.env['FIREBASE_APP_ID']!,
+      measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID'],
+    ),
+  );
+
   runApp(MyApp());
 }
 
