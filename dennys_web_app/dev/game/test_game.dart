@@ -11,8 +11,8 @@ import 'package:flame/src/extensions/vector2.dart';
 import 'package:dennys_web_app/game/map_data.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dennys_web_app/profile/user_data.dart';
-import 'dart:math' as math;
+//import 'package:dennys_web_app/profile/user_data.dart';
+//import 'dart:math' as math;
 
 class BuildGame extends StatelessWidget {
   @override
@@ -217,12 +217,13 @@ class MyGame extends Game {
       tileSize;
 
   List<List<int>> generateMapData() {
-    print(
+    debugPrint(
         "Max Height: ${myTree.maxMapHeight}, Max Width: ${myTree.maxMapWidth}");
-    print("Matrix dimensions: ${dynamicMap.length}x${dynamicMap[0].length}");
+    debugPrint(
+        "Matrix dimensions: ${dynamicMap.length}x${dynamicMap[0].length}");
 
     myTree.nodeList.forEach((key, node) {
-      print("Checking node with x: ${node.x}, y: ${node.y}");
+      debugPrint("Checking node with x: ${node.x}, y: ${node.y}");
 
       if (node.x <= _maxWidth && node.y <= maxHeight) {
         for (int dx = 0; dx < floorData.length; ++dx) {
@@ -260,12 +261,15 @@ class MyGame extends Game {
         // Compute the length in y direction spanned by the children
         if (minY != null && maxY != null) {
           int yLength = maxY! - minY!;
-          print("yLength spanned by children of node with key $key: $yLength");
-          print("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
+          debugPrint(
+              "yLength spanned by children of node with key $key: $yLength");
+          debugPrint(
+              "Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
         } else {
-          print("Node with key $key has no children, so yLength is undefined.");
+          debugPrint(
+              "Node with key $key has no children, so yLength is undefined.");
         }
-        print('${node.rank} maxRank ${myTree.maxRank}');
+        debugPrint('${node.rank} maxRank ${myTree.maxRank}');
       }
     });
 
@@ -300,12 +304,12 @@ class MyGame extends Game {
         // Compute the length in y direction spanned by the children
         if (minY != null && maxY != null) {
           int yLength = maxY! - minY!;
-          print("yLength spanned by children of node with key $key: $yLength");
-          print("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
+          debugPrint("yLength spanned by children of node with key $key: $yLength");
+          debugPrint("Min node: ${minNode?.title}, Max node: ${maxNode?.title}");
         } else {
-          print("Node with key $key has no children, so yLength is undefined.");
+          debugPrint("Node with key $key has no children, so yLength is undefined.");
         }
-        print('${node.rank} maxRank ${myTree.maxRank}');
+        debugPrint('${node.rank} maxRank ${myTree.maxRank}');
         */
 
         if (node.rank != myTree.maxRank + 1 && node.countChildren() != 0) {
@@ -534,7 +538,7 @@ class MyGame extends Game {
 
       // Validate tileTypes
       if (tileTypes.isEmpty) {
-        print("Error: tileTypes is not well-formed.");
+        debugPrint("Error: tileTypes is not well-formed.");
         return;
       }
 
@@ -548,7 +552,7 @@ class MyGame extends Game {
           // Retrieve the sprite from the sprite sheet
           //final sprite = playerSpriteSheet.getSprite(coord.x.toInt(), coord.y.toInt());
           //final sprite = playerSpriteSheet.getSprite(0, 1);
-          //print("${node.title} ${coord.x.toInt()},${coord.y.toInt()}");
+          //debugPrint("${node.title} ${coord.x.toInt()},${coord.y.toInt()}");
           Sprite? sprite;
 
           if (node.parent == null) {
@@ -575,7 +579,7 @@ class MyGame extends Game {
           }
           // Handle if sprite is null
           if (sprite == null) {
-            print("Error: Sprite not found.");
+            debugPrint("Error: Sprite not found.");
             continue;
           }
 
@@ -642,7 +646,7 @@ class MyGame extends Game {
       }
       // Validate tileTypes
       if (tileTypes.isEmpty) {
-        print("Error: tileTypes is not well-formed.");
+        debugPrint("Error: tileTypes is not well-formed.");
         return;
       }
     });
@@ -657,16 +661,16 @@ class MyGame extends Game {
     currentScale = (startingScale * details.scale).clamp(0.5, 2.0);
     currentPanOffset +=
         details.focalPoint - details.localFocalPoint; // Update pan offset
-    print("Current Scale: $currentScale");
+    debugPrint("Current Scale: $currentScale");
   }
 
   void onScaleStart(ScaleStartDetails details) {
-    print("Scale Started");
+    debugPrint("Scale Started");
     startingScale = currentScale;
   }
 
   void onScaleEnd(ScaleEndDetails details) {
-    print("Scale Ended");
+    debugPrint("Scale Ended");
   }
 
   @override

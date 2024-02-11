@@ -5,12 +5,11 @@ import 'package:dennys_web_app/login/login_page.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
 import 'package:dennys_web_app/profile/user_data.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:dennys_web_app/game/test_game.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env"); // .envファイルを読み込む
+  await dotenv.load(fileName: ".env");
 
   // 環境変数からFirebase設定を読み込む
   await Firebase.initializeApp(
@@ -108,15 +107,6 @@ class _HomePageState extends State<HomePage> {
               child: const Text('Auth State'),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to registration page
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => BuildGame()),
-                );
-              },
-              child: const Text('Game'),
-            ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -159,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                 }
                 myTree.displayAllNodes();
               },
-              child: const Text('Game'),
+              child: const Text('Make coordinates'),
             ),
 
             // Step 2: Add the TextField to the Column
