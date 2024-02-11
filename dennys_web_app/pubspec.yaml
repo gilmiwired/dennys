@@ -42,7 +42,7 @@ dependencies:
   cloud_firestore: ^4.4.3
   firebase_crashlytics: ^3.0.15
   firebase_analytics: ^10.1.4
-  firebase_remote_config: ^3.0.13
+  firebase_remote_config: ^4.3.13
   firebase_messaging: ^14.2.5
   firebase_auth: ^4.2.9
   firebase_core_web: ^2.6.0
@@ -58,7 +58,7 @@ dependencies:
 
   #gpt
   http: ^1.1.0
-  dart_openai: ^4.0.0
+  dart_openai: ^5.0.0
   flutter_dotenv: ^5.1.0
 
 dev_dependencies:
@@ -71,7 +71,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
