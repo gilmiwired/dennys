@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:dart_openai/dart_openai.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter/material.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 
+// node class
 class Node {
   final String title;
   late Node? parent;
@@ -22,7 +24,6 @@ class Node {
     required this.status,
     required this.description,
   }) {
-    // Initialize rank based on parent
     rank = (parent != null) ? parent!.rank + 1 : 0;
   }
 
@@ -33,15 +34,14 @@ class Node {
     return children!.length;
   }
 
-// Inside the Node class
   void display() {
-    print('Title: $title');
-    print('Parent: ${parent?.title ?? "None"}');
-    print('Children: ${children?.map((e) => e.title).toList() ?? "None"}');
-    print('Status: $status');
-    print('Description: $description');
-    print('Rank: $rank');
-    print('node X : $x node Y : $y');
+    debugPrint('Title: $title');
+    debugPrint('Parent: ${parent?.title ?? "None"}');
+    debugPrint('Children: ${children?.map((e) => e.title).toList() ?? "None"}');
+    debugPrint('Status: $status');
+    debugPrint('Description: $description');
+    debugPrint('Rank: $rank');
+    debugPrint('node X : $x node Y : $y');
   }
 
   @override
@@ -58,8 +58,6 @@ class GlobalTree {
   final Map<String, Node> _nodeList = {};
   final Set<String> _collectedChildNodes = {};
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  //9/2以降追加分
 
   int nodeWidth = 20;
   int nodeHeight = 9;
@@ -100,7 +98,6 @@ class GlobalTree {
     if (_singleton != null) return;
 
     if (tree != null && tasks != null) {
-      // Initialize using provided tree and tasks
       _singleton = GlobalTree._internal(
         title: title,
         tree: tree,
@@ -109,7 +106,6 @@ class GlobalTree {
       _populateNodeListAndEdges();
       _singleton!.calculateMaxMapWidth();
     } else if (isAsync) {
-      // Fetch tree and tasks asynchronously
       Map<String, dynamic> result = await generateTaskTree(title);
 
       if (result.containsKey('tree') && result.containsKey('tasks')) {
@@ -121,27 +117,27 @@ class GlobalTree {
         _populateNodeListAndEdges();
         _singleton!.calculateMaxMapWidth();
       } else {
-        print("Error: Invalid result from generateTaskTree.");
+        debugPrint("Error: Invalid result from generateTaskTree.");
       }
     } else {
       throw Exception("Provide tree and tasks or set isAsync to true.");
     }
   }
 
+/*
   static Future<Map<String, dynamic>> _initializeAsync(String title) async {
     Map<String, dynamic> result = await generateTaskTree(title);
     return result;
   }
-
+*/
   static void _populateNodeListAndEdges() {
-    // First, create all Node objects without setting their children
     for (var entry in _singleton!._tasks.entries) {
       _singleton!.maxTexLength =
           max(_singleton!.maxTexLength, entry.value.length);
       _singleton!._nodeList[entry.key] = Node(
         title: entry.value,
-        parent: null, // Set parent to null initially
-        children: [], // Initialize children as an empty list
+        parent: null,
+        children: [],
         status: "do",
         description: "説明",
       );
@@ -150,33 +146,27 @@ class GlobalTree {
       _singleton!.horizontalSpacing = _singleton!.maxTexLength * 4;
     }
 
-    // Now set the parent-child relationships
     for (var entry in _singleton!._tasks.entries) {
-      Node parentNode =
-          _singleton!._nodeList[entry.key]!; // Retrieve the parent Node
-      List<Node> childrenNodes = []; // To store the children Nodes
+      Node parentNode = _singleton!._nodeList[entry.key]!;
+      List<Node> childrenNodes = [];
 
       List<String>? childrenKeys =
           _singleton!._tree[entry.key]?.map((e) => e.toString()).toList();
       if (childrenKeys != null) {
         for (var childKey in childrenKeys) {
-          Node? childNode =
-              _singleton!._nodeList[childKey]; // Retrieve the child Node
+          Node? childNode = _singleton!._nodeList[childKey];
           if (childNode != null) {
             childrenNodes.add(childNode);
-            childNode.parent = parentNode; // Set the parent of the child Node
-            childNode.rank = parentNode.rank +
-                1; // Update the rank based on the parent's rank
+            childNode.parent = parentNode;
+            childNode.rank = parentNode.rank + 1;
           }
         }
       }
 
-      parentNode.children =
-          childrenNodes; // Set the children of the parent Node
+      parentNode.children = childrenNodes;
     }
   }
 
-// Getter methods
   Set<String> get collectedChildNodes => _collectedChildNodes;
   String get title => _title;
   Map<String, List<int>> get tree => _tree;
@@ -239,8 +229,7 @@ class GlobalTree {
   //追加ツリー
   static Map<String, dynamic> extractTaskTree(String aiResponse) {
     //応答をtree,tasksに整理
-    String validJsonString =
-        aiResponse.replaceAll("'", '"'); //正規表現によるシングルクォートをダブルクォートに変換
+    String validJsonString = aiResponse.replaceAll("'", '"');
     final RegExp pattern = RegExp(r"(\{.*\})");
     final Match? match = pattern.firstMatch(validJsonString);
 
@@ -262,14 +251,47 @@ class GlobalTree {
         'tasks': tasks,
       };
     } else {
-      print("Error: Failed to extract the task tree from the AI response.");
+      debugPrint(
+          "Error: Failed to extract the task tree from the AI response.");
       return {};
     }
   }
 
   //ツリー生成
+  //issue
   static Future<Map<String, dynamic>> generateTaskTree(String userGoal) async {
     //userGoalに対するAIの応答を返す。（今のところは固定でtree,tasks生成のみ。そのうちフィードバックとかできるようにする。）
+    Map<String, dynamic> result = {
+      "tree": {
+        '1': [2, 3, 4, 5, 6],
+        '2': [7, 8, 9],
+        '3': [10, 11, 12],
+        '4': [13, 14],
+        '5': [15, 16]
+      },
+      "tasks": {
+        '1': 'ゲームを作る',
+        '2': 'デザイン',
+        '3': 'プログラム',
+        '4': 'グラフィックス',
+        '5': 'サウンド',
+        '6': 'テスト',
+        '7': 'コンセプト',
+        '8': 'キャラ・ストーリー',
+        '9': 'ルール・メカニクス',
+        '10': 'エンジン選択',
+        '11': 'キャラ動き',
+        '12': 'ロジック・AI',
+        '13': 'キャラ・背景アート',
+        '14': 'アニメーション',
+        '15': 'BGM',
+        '16': '効果音'
+      }
+    };
+
+    return result;
+
+    /*
     await dotenv.load(fileName: '.env');
     OpenAI.apiKey = dotenv.get('OPEN_AI_API_KEY');
 
@@ -303,17 +325,18 @@ class GlobalTree {
           break;
         }
       } catch (error) {
-        print("Error occurred: $error");
+        debugPrint("Error occurred: $error");
       }
 
       retryCount++;
     }
 
     if (retryCount == maxRetries) {
-      print("Maximum retries reached without a valid response.");
+      debugPrint("Maximum retries reached without a valid response.");
     }
 
     return result;
+  */
   }
 
   // シングルトンのインスタンスをリセットするメソッド
@@ -333,7 +356,7 @@ class GlobalTree {
     if (_tree.containsKey(nodeId)) {
       for (int child in _tree[nodeId]!) {
         _collectedChildNodes.add(child.toString());
-        print('Collected Node: $child');
+        debugPrint('Collected Node: $child');
         _gatherChildNodes(child.toString());
       }
     }
@@ -341,7 +364,6 @@ class GlobalTree {
 
   Future<void> addDataToFirestore(User user) async {
     try {
-      // タイトルが既に存在するか確認
       QuerySnapshot snapshot = await _firestore
           .collection('users')
           .doc(user.uid)
@@ -349,9 +371,7 @@ class GlobalTree {
           .where('title', isEqualTo: title)
           .get();
 
-      // タイトルが存在しない場合のみ追加
       if (snapshot.docs.isEmpty) {
-        // タイトル用の新しいドキュメントを作成
         DocumentReference titleRef = _firestore
             .collection('users')
             .doc(user.uid)
@@ -361,7 +381,6 @@ class GlobalTree {
         await titleRef.set({
           'title': title,
         });
-        // そのドキュメント内にtasksとtreeサブコレクションを追加
         await _firestore
             .collection('users')
             .doc(user.uid)
@@ -379,44 +398,44 @@ class GlobalTree {
           'data': tree,
         });
       } else {
-        print('Title already exists.');
+        debugPrint('Title already exists.');
       }
     } catch (e) {
-      print(e);
+      debugPrint(e as String?);
     }
   }
 
   //コンソールにノード表示
   void printNodeList() {
-    print('--- Print Node List ---');
+    debugPrint('--- Print Node List ---');
 
-    print('--- Tree ---');
+    debugPrint('--- Tree ---');
     for (var entry in _tree.entries) {
       if (!_collectedChildNodes.contains(entry.key)) {
-        print('Key: ${entry.key}, Value: ${entry.value.join(', ')}');
+        debugPrint('Key: ${entry.key}, Value: ${entry.value.join(', ')}');
       }
     }
 
-    print('--- Tasks ---');
+    debugPrint('--- Tasks ---');
     for (var entry in _tasks.entries) {
       if (!_collectedChildNodes.contains(entry.key)) {
-        print('Key: ${entry.key}, Value: ${entry.value}');
+        debugPrint('Key: ${entry.key}, Value: ${entry.value}');
       }
     }
 
-    print('--- NodeList ---');
+    debugPrint('--- NodeList ---');
     for (var entry in _nodeList.entries) {
       if (!_collectedChildNodes.contains(entry.key)) {
-        print('Key: ${entry.key}, Value: ${entry.value.toString()}');
+        debugPrint('Key: ${entry.key}, Value: ${entry.value.toString()}');
       }
     }
 
-    print('--- CollectedChildNodes ---');
-    print(_collectedChildNodes.join(', '));
+    debugPrint('--- CollectedChildNodes ---');
+    debugPrint(_collectedChildNodes.join(', '));
   }
 
   //座標割り当て関数
-  void assign_Coordinates(Node node) {
+  void assignCoordinates(Node node) {
     if (node.children == null || node.children!.isEmpty) {
       // Leaf node
       node.y = max(0, lowestY[node.rank] ?? 0);
@@ -425,7 +444,7 @@ class GlobalTree {
       lowestY[node.rank] =
           max(0, (lowestY[node.rank] ?? 0) + nodeHeight + verticalSpacing);
       if (node.y + nodeHeight > maxMapHeight) {
-        print("Max Y : ${maxMapHeight}");
+        debugPrint("Max Y : $maxMapHeight");
         maxMapHeight = node.y + nodeHeight;
       }
       return;
@@ -437,7 +456,7 @@ class GlobalTree {
     // First, assign coordinates to the children
     if (node.children != null) {
       for (Node child in node.children!) {
-        assign_Coordinates(child);
+        assignCoordinates(child);
       }
     }
 
@@ -454,7 +473,7 @@ class GlobalTree {
     lowestY[node.rank] =
         max(lowestY[node.rank] ?? 0, node.y + totalSubtreeHeight);
     if (node.y + nodeHeight > maxMapHeight) {
-      print("Max Y : ${maxMapHeight}");
+      debugPrint("Max Y : $maxMapHeight");
       maxMapHeight = node.y + nodeHeight;
     }
   }
@@ -479,17 +498,17 @@ class GlobalTree {
 
   // Inside the GlobalTree class
   void displayAllNodes() {
-    print("Displaying all nodes:");
-    print("Max X : ${maxMapWidth}");
+    debugPrint("Displaying all nodes:");
+    debugPrint("Max X : $maxMapWidth");
     for (var entry in _nodeList.entries) {
-      print("Node ID: ${entry.key}");
+      debugPrint("Node ID: ${entry.key}");
       Node node = entry.value;
       node.display();
-      print("x: ${node.x}, y: ${node.y}");
-      print("----------");
+      debugPrint("x: ${node.x}, y: ${node.y}");
+      debugPrint("----------");
     }
 
-    print("Max Y : ${maxMapHeight}");
+    debugPrint("Max Y : $maxMapHeight");
   }
 }
 

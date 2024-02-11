@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dennys_web_app/login/login_page.dart';
-import 'package:dennys_web_app/register/registration_page.dart';
+//import 'package:dennys_web_app/register/registration_page.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
 import 'package:dennys_web_app/profile/user_data.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:dennys_web_app/Screen/Home.dart';
+//import 'package:dennys_web_app/Screen/Home.dart';
 
 import 'package:dennys_web_app/game/test_game.dart';
 
@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     Node? rootNode = myTree.nodeList["1"];
 
     if (rootNode != null) {
-      myTree.assign_Coordinates(rootNode);
+      myTree.assignCoordinates(rootNode);
     }
     myTree.displayAllNodes();
     myTree.printNodeList();
@@ -142,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                 Node? rootNode = myTree.nodeList["1"];
 
                 if (rootNode != null) {
-                  myTree.assign_Coordinates(rootNode);
+                  myTree.assignCoordinates(rootNode);
                 }
                 myTree.displayAllNodes();
               },
