@@ -6,10 +6,10 @@ import 'package:dennys_web_app/register/registration_page.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
-  LoginPageState createState() => LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -30,8 +30,7 @@ class LoginPageState extends State<LoginPage> {
         final localContext = context;
         if (mounted) {
           ScaffoldMessenger.of(localContext).showSnackBar(
-            const SnackBar(
-                content: Text('Successfully Logged In!')), // Add const here
+            const SnackBar(content: Text('Successfully Logged In!')),
           );
         }
       } catch (e) {
@@ -49,18 +48,17 @@ class LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'), // Add const here
+        title: const Text('Login Page'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0), // Already const
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration:
-                    const InputDecoration(labelText: 'Email'), // Add const here
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -68,11 +66,10 @@ class LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16), // Already const
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
-                    labelText: 'Password'), // Add const here
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -81,21 +78,20 @@ class LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16), // Already const
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _login,
-                child: const Text('Login'), // Add const here
+                child: const Text('Login'),
               ),
-              const SizedBox(height: 16), // Already const
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              RegistrationPage())); // Add const here
+                          builder: (context) => const RegistrationPage()));
                 },
-                child: const Text('アカウントがない場合はこちら'), // Add const here
+                child: const Text('アカウントがない場合はこちら'),
               ),
             ],
           ),

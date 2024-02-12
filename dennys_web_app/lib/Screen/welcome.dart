@@ -5,13 +5,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 class WelcomeScreen extends StatelessWidget {
   final User? user;
 
-  WelcomeScreen({Key? key, this.user}) : super(key: key);
+  const WelcomeScreen({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome!'),
+        title: const Text('Welcome!'),
       ),
       body: Center(
         child: Column(
@@ -19,16 +19,16 @@ class WelcomeScreen extends StatelessWidget {
           children: [
             Text(
               'Welcome, ${user?.displayName ?? user?.email}!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
-            Text('You have successfully signed in.'),
-            SizedBox(height: 40),
+            const SizedBox(height: 20),
+            const Text('You have successfully signed in.'),
+            const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
                 // Navigate to another part of the app or sign out, etc.
               },
-              child: Text('Proceed to Dashboard'),
+              child: const Text('Proceed to Dashboard'),
             ),
           ],
         ),

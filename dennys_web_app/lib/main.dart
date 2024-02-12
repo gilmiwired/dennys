@@ -24,10 +24,11 @@ Future main() async {
     ),
   );
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -35,12 +36,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -75,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     }
     myTree.displayAllNodes();
     myTree.printNodeList();
-    print("Input Value: $inputValue");
+    debugPrint("Input Value: $inputValue");
     // You can call any other specific function here using the inputValue
   }
 
@@ -94,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                 if (currentUser == null) {
                   // Navigate to login page if not logged in
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
                   );
                 } else {
                   // Navigate to UserModelPage if logged in
@@ -106,8 +108,8 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('Auth State'),
             ),
-            SizedBox(height: 20),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Initialize the GlobalTree
@@ -157,7 +159,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(10.0),
               child: TextField(
                 controller: _textController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter some text here',
                   border: OutlineInputBorder(),
                 ),
