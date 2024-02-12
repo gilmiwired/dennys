@@ -1,8 +1,8 @@
+/*
 import 'dart:convert';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-// extractTaskTree関数
 // extractTaskTree関数
 Map<String, dynamic> extractTaskTree(String aiResponse) {
   //応答をtree,tasksに整理
@@ -59,3 +59,4 @@ Future<Map<String, dynamic>> generateTaskTree(String userGoal) async {
   final aiResponse = response.choices.first.message.content;
   return extractTaskTree(aiResponse); //応答をtree,tasksに整理して返す
 }
+*/
