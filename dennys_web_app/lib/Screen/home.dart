@@ -12,7 +12,7 @@ void main() async {
 }
 
 class FigmaToCodeApp extends StatelessWidget {
-  const FigmaToCodeApp({Key? key}) : super(key: key);
+  const FigmaToCodeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +32,12 @@ class FigmaToCodeApp extends StatelessWidget {
 }
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         CustomHeader(),
         Expanded(child: MainContent()),
       ],
@@ -46,12 +46,12 @@ class Home extends StatelessWidget {
 }
 
 class CustomHeader extends StatelessWidget {
-  const CustomHeader({Key? key}) : super(key: key);
+  const CustomHeader({super.key});
 
   Widget _buildBrandName() {
-    return Text(
+    return const Text(
       'Randuraft',
-      style: const TextStyle(
+      style: TextStyle(
         color: Color(0xFFBE60AE),
         fontSize: 50,
         fontWeight: FontWeight.w900,
@@ -66,7 +66,7 @@ class CustomHeader extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SignInScreen()),
+              MaterialPageRoute(builder: (context) => const SignInScreen()),
             );
           },
           child: const Text(
@@ -83,13 +83,13 @@ class CustomHeader extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SignUpScreen()),
+              MaterialPageRoute(builder: (context) => const SignUpScreen()),
             );
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             decoration: BoxDecoration(
-              color: Color(0xFFBE60AE),
+              color: const Color(0xFFBE60AE),
               borderRadius: BorderRadius.circular(100),
             ),
             child: const Text(
@@ -108,14 +108,14 @@ class CustomHeader extends StatelessWidget {
 
   Widget _buildMenuIcon(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.menu, color: Color(0xFFD996C7), size: 40.0),
+      icon: const Icon(Icons.menu, color: Color(0xFFD996C7), size: 40.0),
       onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: true, // 背景をタップしてもダイアログが閉じる
           barrierColor: Colors.transparent, // 背景を透明に
           builder: (BuildContext context) {
-            return ModernDialog();
+            return const ModernDialog();
           },
         );
       },
@@ -155,34 +155,35 @@ class CustomHeader extends StatelessWidget {
 }
 
 class ModernDialog extends StatelessWidget {
+  const ModernDialog({super.key});
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Color(0xFFBF60AF),
+      backgroundColor: const Color(0xFFBF60AF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              icon: Icon(Icons.close, color: Colors.white, size: 30.0),
+              icon: const Icon(Icons.close, color: Colors.white, size: 30.0),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignInScreen()),
+                  MaterialPageRoute(builder: (context) => const SignInScreen()),
                 );
               },
-              child: Text(
+              child: const Text(
                 'Sign in',
                 style: TextStyle(
                   color: Colors.white,
@@ -192,15 +193,15 @@ class ModernDialog extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SignUpScreen()),
+                  MaterialPageRoute(builder: (context) => const SignUpScreen()),
                 );
               },
-              child: Text(
+              child: const Text(
                 'Sign up',
                 style: TextStyle(
                   color: Colors.white,
@@ -218,7 +219,7 @@ class ModernDialog extends StatelessWidget {
 }
 
 class MainContent extends StatelessWidget {
-  const MainContent({Key? key}) : super(key: key);
+  const MainContent({super.key});
   Widget _buildOriginalText(double maxWidth) {
     double fontSize = 100;
     double subTextFontSize = 36; // 追加: サブテキストのフォントサイズ
@@ -330,13 +331,13 @@ class MainContent extends StatelessWidget {
 }
 
 class Frame12 extends StatefulWidget {
-  const Frame12({Key? key}) : super(key: key);
+  const Frame12({super.key});
 
   @override
-  _Frame12State createState() => _Frame12State();
+  Frame12State createState() => Frame12State();
 }
 
-class _Frame12State extends State<Frame12> {
+class Frame12State extends State<Frame12> {
   final Random _random = Random();
   final int numberOfSquares = 15;
   final List<double> _topOffsets = List.generate(15, (index) => 0.0);
@@ -403,7 +404,7 @@ class _Frame12State extends State<Frame12> {
       totalWidth -= (squareSize + offsetSpacing);
     }
 
-    return Container(
+    return SizedBox(
       width: width,
       height: squareSize * 2,
       child: Row(

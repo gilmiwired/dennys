@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dennys_web_app/login/login_page.dart';
 import 'package:dennys_web_app/global_setting/global_tree.dart';
 
 class UserModelPage extends StatefulWidget {
   final User user;
 
-  UserModelPage({required this.user});
+  const UserModelPage({super.key, required this.user});
 
   @override
   _UserModelPageState createState() => _UserModelPageState();
 }
 
 class _UserModelPageState extends State<UserModelPage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _titleController = TextEditingController();
 
   @override
@@ -23,21 +21,19 @@ class _UserModelPageState extends State<UserModelPage> {
     super.dispose();
   }
 
-  final Map<String, List<int>> tree = {/* tree data here */};
-  final Map<String, String> tasks = {/* tasks data here */};
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () async {
+              final navigator = Navigator.of(context);
               await FirebaseAuth.instance.signOut();
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => LoginPage()),
+              navigator.pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
           )
@@ -52,27 +48,55 @@ class _UserModelPageState extends State<UserModelPage> {
                 radius: 50,
                 backgroundImage: NetworkImage(widget.user.photoURL!),
               ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Name: ${widget.user.displayName ?? 'N/A'}'),
             Text('Email: ${widget.user.email ?? 'N/A'}'),
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Enter title here',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
                 String title = _titleController.text;
-                GlobalTree.initialize(title: title, tree: tree, tasks: tasks);
+                GlobalTree.initialize(
+                  title: title,
+                  tree: {
+                    '1': [2, 3, 4, 5, 6],
+                    '2': [7, 8, 9],
+                    '3': [10, 11, 12],
+                    '4': [13, 14],
+                    '5': [15, 16]
+                  },
+                  tasks: {
+                    '1': 'ゲームを作る',
+                    '2': 'デザイン',
+                    '3': 'プログラム',
+                    '4': 'グラフィックス',
+                    '5': 'サウンド',
+                    '6': 'テスト',
+                    '7': 'コンセプト',
+                    '8': 'キャラ・ストーリー',
+                    '9': 'ルール・メカニクス',
+                    '10': 'エンジン選択',
+                    '11': 'キャラ動き',
+                    '12': 'ロジック・AI',
+                    '13': 'キャラ・背景アート',
+                    '14': 'アニメーション',
+                    '15': 'BGM',
+                    '16': '効果音'
+                  },
+                );
                 var globalTree = GlobalTree.instance;
                 await globalTree.addDataToFirestore(widget.user);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Data added successfully!')),
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text('Data added successfully!')),
                 );
               },
-              child: Text('Add Test Data to Firestore'),
+              child: const Text('Add Test Data to Firestore'),
             ),
           ],
         ),

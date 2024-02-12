@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dennys_web_app/profile/user_model.dart';
 
 class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
   @override
   _RegistrationPageState createState() => _RegistrationPageState();
 }
@@ -17,23 +18,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      print("Attempting to register with email: ${_emailController.text}");
+      debugPrint("Attempting to register with email: ${_emailController.text}");
+      final scaffoldMessenger = ScaffoldMessenger.of(context);
       try {
         UserCredential userCredential =
             await _auth.createUserWithEmailAndPassword(
                 email: _emailController.text,
                 password: _passwordController.text);
-        print("Registration successful for email: ${_emailController.text}");
+        debugPrint(
+            "Registration successful for email: ${_emailController.text}");
 
         // 登録が成功したら、UserModelにUIDを保存
         saveUserToModel(userCredential.user!);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Successfully Registered!')),
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Successfully Registered!')),
         );
       } catch (e) {
-        print("Registration failed with error: $e");
-        ScaffoldMessenger.of(context).showSnackBar(
+        debugPrint("Registration failed with error: $e");
+        scaffoldMessenger.showSnackBar(
           SnackBar(content: Text('Registration Failed: $e')),
         );
       }
@@ -42,7 +45,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   void saveUserToModel(User user) {
     final userModel = UserModel(uid: user.uid, email: user.email);
-    print(
+    debugPrint(
         "UserModel saved with UID: ${userModel.uid} and Email: ${userModel.email}");
   }
 
@@ -50,7 +53,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registration Page'),
+        title: const Text('Registration Page'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -60,7 +63,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -68,10 +71,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -83,10 +86,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _confirmPasswordController,
-                decoration: InputDecoration(labelText: 'Confirm Password'),
+                decoration:
+                    const InputDecoration(labelText: 'Confirm Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -98,10 +102,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _register,
-                child: Text('Register'),
+                child: const Text('Register'),
               ),
             ],
           ),
