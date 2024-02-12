@@ -18,6 +18,6 @@ jobs:
         working-directory: ./dennys_web_app/lib
         run: dart format --set-exit-if-changed .
       - name: Run dart analyze
-        working-directory: ./dennys_web_app
+        working-directory: ./dennys_web_app/lib
         run: dart analyze
 
