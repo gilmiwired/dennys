@@ -20,4 +20,6 @@ jobs:
       - name: Run dart analyze
         working-directory: ./dennys_web_app/lib
         run: dart analyze
-
+      - name: Run flutter analyze
+        working-directory: ./dennys_web_app/lib
+        run: flutter analyze
