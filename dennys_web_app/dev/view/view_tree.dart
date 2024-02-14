@@ -41,7 +41,11 @@ class _View_Tree extends State<View_Tree> {
 
   @override
   Widget build(BuildContext context) {
-    GlobalTree.initialize(title: 'SomeUniqueKey', tree: tree, tasks: tasks);
+    GlobalTree.initialize(
+        title: 'SomeUniqueKey',
+        tree: tree,
+        tasks: tasks
+    );
 
     return MaterialApp(
       home: Scaffold(
@@ -51,3 +55,8 @@ class _View_Tree extends State<View_Tree> {
     );
   }
 }
+
+
+
+
+
