@@ -1,18 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dart_openai/dart_openai.dart';
-import 'package:envied/envied.dart';
 import 'package:http/http.dart' as http;
-part 'make_tree.g.dart';
-
-@Envied(path: '.env')
-abstract class Env {
-  @EnviedField(varName: 'OPEN_AI_API_KEY')
-  static const String apiKey = _Env.apiKey;
-}
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  OpenAI.apiKey = Env.apiKey;
+  await dotenv.load(fileName: ".env");
+  OpenAI.apiKey = dotenv.env['OPEN_AI_API_KEY']!;
   OpenAI.showLogs = true;
   OpenAI.showResponsesLogs = true;
 
@@ -62,7 +56,7 @@ class _ChatWidgetState extends State<ChatWidget> {
           ElevatedButton(
             onPressed: () {
               final userGoal = _controller.text;
-              generateTaskTree(userGoal, context);
+              generateTaskTree(userGoal);
             },
             child: const Text('Generate Task Tree'),
           ),
@@ -71,11 +65,11 @@ class _ChatWidgetState extends State<ChatWidget> {
     );
   }
 
-  void generateTaskTree(String userGoal, BuildContext context) async {
+  void generateTaskTree(String userGoal) async {
     final url = Uri.parse('https://api.openai.com/v1/chat/completions');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${Env.apiKey}',
+      'Authorization': 'Bearer ${dotenv.env['OPEN_AI_API_KEY']!}',
     };
     final body = json.encode({
       "model": "gpt-3.5-turbo",
@@ -95,38 +89,40 @@ class _ChatWidgetState extends State<ChatWidget> {
         final responseBody = json.decode(response.body);
         final String responseText =
             responseBody['choices'][0]['message']['content'].trim();
-        showResponseDialog(context, responseText);
+        if (mounted) {
+          showResponseDialog(responseText);
+        }
       } else {
-        showResponseDialog(
-            context, "Failed to generate a response. Please try again.");
+        if (mounted) {
+          showResponseDialog(
+              "Failed to generate a response. Please try again.");
+        }
       }
     } catch (e) {
       debugPrint('Error generating task tree: $e');
-      showResponseDialog(context, "Error generating task tree: $e");
+      if (mounted) {
+        showResponseDialog("Error generating task tree: $e");
+      }
     }
   }
 
-  void showResponseDialog(BuildContext context, String response) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Task Tree"),
-              content: SingleChildScrollView(
-                child: Text(response),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text("OK"),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
+  void showResponseDialog(String response) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Task Tree"),
+          content: SingleChildScrollView(
+            child: Text(response),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
         );
-      }
-    });
+      },
+    );
   }
 }
