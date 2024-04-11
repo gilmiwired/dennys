@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dennys_web_app/logger/logger.dart';
-import 'package:dennys_web_app/task_data_generator.dart';
+import 'package:randuraft_web_app/logger/logger.dart';
+import 'package:randuraft_web_app/task_data_generator.dart';
 
 class ManualResist {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;

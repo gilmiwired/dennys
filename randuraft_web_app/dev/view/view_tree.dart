@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dennys_web_app/common/node_widget.dart';
-import 'package:dennys_web_app/global_setting/global_tree.dart';
+import 'package:randuraft_web_app/common/node_widget.dart';
+import 'package:randuraft_web_app/global_setting/global_tree.dart';
 
 class View_Tree extends StatefulWidget {
   @override
@@ -41,11 +41,7 @@ class _View_Tree extends State<View_Tree> {
 
   @override
   Widget build(BuildContext context) {
-    GlobalTree.initialize(
-        title: 'SomeUniqueKey',
-        tree: tree,
-        tasks: tasks
-    );
+    GlobalTree.initialize(title: 'SomeUniqueKey', tree: tree, tasks: tasks);
 
     return MaterialApp(
       home: Scaffold(
@@ -55,8 +51,3 @@ class _View_Tree extends State<View_Tree> {
     );
   }
 }
-
-
-
-
-
