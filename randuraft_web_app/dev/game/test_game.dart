@@ -8,10 +8,10 @@ import 'package:flame/extensions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/src/extensions/vector2.dart';
-import 'package:dennys_web_app/game/map_data.dart';
-import 'package:dennys_web_app/global_setting/global_tree.dart';
+import 'package:randuraft_web_app/game/map_data.dart';
+import 'package:randuraft_web_app/global_setting/global_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:dennys_web_app/profile/user_data.dart';
+//import 'package:randuraft_web_app/profile/user_data.dart';
 //import 'dart:math' as math;
 
 class BuildGame extends StatelessWidget {

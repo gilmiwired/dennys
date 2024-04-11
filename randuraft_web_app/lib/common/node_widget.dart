@@ -1,6 +1,6 @@
 /*
 import 'package:flutter/material.dart';
-import 'package:dennys_web_app/global_setting/global_tree.dart';
+import 'package:randuraft_web_app/global_setting/global_tree.dart';
 
 こいつのそんざいいぎがわかりません
 class NodeWidget extends StatelessWidget {
