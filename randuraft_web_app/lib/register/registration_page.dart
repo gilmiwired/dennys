@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dennys_web_app/profile/user_model.dart';
+import 'package:randuraft_web_app/profile/user_model.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
