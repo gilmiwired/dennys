@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:dennys_web_app/login/login_page.dart';
-import 'package:dennys_web_app/global_setting/global_tree.dart';
+import 'package:randuraft_web_app/login/login_page.dart';
+import 'package:randuraft_web_app/global_setting/global_tree.dart';
 
 class UserModelPage extends StatefulWidget {
   final User user;
