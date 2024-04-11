@@ -18,11 +18,11 @@ jobs:
         with:
           flutter-version: '3.16.9'
       - name: Install dependencies
-        working-directory: ./dennys_web_app
+        working-directory: ./randuraft_web_app
         run: flutter pub get
       - name: Run dart format
-        working-directory: ./dennys_web_app/lib
+        working-directory: ./randuraft_web_app/lib
         run: dart format --set-exit-if-changed .
       - name: Run dart analyze
-        working-directory: ./dennys_web_app/lib
+        working-directory: ./randuraft_web_app/lib
         run: dart analyze
