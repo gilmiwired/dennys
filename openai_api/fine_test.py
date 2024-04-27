@@ -1,9 +1,11 @@
 import os
-import openai
 import time
+
+import openai
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 finetuned_model = os.getenv("FINE_TURNING_MODEL")
+
 
 def AskChatbot(message):
     retries = 3
@@ -11,12 +13,12 @@ def AskChatbot(message):
     for _ in range(retries):
         try:
             completion = openai.Completion.create(
-                 model       = finetuned_model,
-                 prompt      = message,
-                 max_tokens  = 1024,
-                 n           = 10,
-                 stop        = None,
-                 temperature = 0,
+                model=finetuned_model,
+                prompt=message,
+                max_tokens=1024,
+                n=10,
+                stop=None,
+                temperature=0,
             )
             print("\n\n\n")
             response = completion.choices[0]["text"]
