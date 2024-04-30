@@ -1,7 +1,6 @@
 """
 これも旧バージョン
 import json
-
 from tiktoken import TikToken, tokenizers
 
 # データの読み込み
