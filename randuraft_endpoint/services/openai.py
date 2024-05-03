@@ -40,7 +40,10 @@ def get_chat_completion(messages:str, model="gpt-3.5-turbo") ->str:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Get chat completion from OpenAI.")
     parser.add_argument(
-        "input", help="Input message to send to the chat model.", type=str
+        "--input",
+        help="Input message to send to the chat model.",
+        type=str,
+        required=True
     )
     args = parser.parse_args()
 
