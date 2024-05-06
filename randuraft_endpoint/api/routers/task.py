@@ -7,8 +7,8 @@ router = APIRouter()
 
 
 @router.post("/chat", response_class=ChatResponse)
-def chat(request: ChatRequest = Body(...)):
-    return ChatResponse(get_chat_completion(request.Request))
+def chat(request: ChatRequest = Body(...))->ChatResponse:
+    return ChatResponse(response_message=get_chat_completion(request.message))
 
 
 # 　ここをいじればタスクtreeとタスク生成してみようこんど
