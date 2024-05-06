@@ -23,11 +23,11 @@ openai.api_key = os.getenv("OPENAI_API_KEY") or ""
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
-def get_chat_completion(messages: str, model="gpt-3.5-turbo") -> str:
+def get_chat_completion(messages: str, role="user", model="gpt-3.5-turbo") -> str:
     try:
         response = openai.ChatCompletion.create(
             model=model,
-            messages=messages,
+            messages=[{"role": role, "content": messages}],
         )
         choices = response.get("choices", [{}])
         completion = choices[0].get("message", {}).get("content", "").strip()
@@ -47,9 +47,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    message = [{"role": "user", "content": args.input}]
     try:
-        completion = get_chat_completion(message)
+        completion = get_chat_completion(args.input)
         print(f"Generated completion: {completion}")
     except Exception as e:
         print(f"Error: {e}")
