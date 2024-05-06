@@ -22,3 +22,24 @@ openai = "^0.27.5"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+[tool.mypy]
+exclude = [
+    "server",
+    "examples",
+    "tests/datastore",
+    "models/database.py",
+]
+plugins = []
+explicit_package_bases = true
+follow_imports = "silent"
+warn_redundant_casts = true
+warn_unused_ignores = true
+check_untyped_defs = true
