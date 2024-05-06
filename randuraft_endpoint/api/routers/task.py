@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body
 
 from api.models.task import ChatRequest, ChatResponse
-from services.openai import get_chat_completion
+from randuraft_endpoint.services.create_chat import get_chat_completion
 
 router = APIRouter()
 
