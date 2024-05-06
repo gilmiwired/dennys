@@ -23,7 +23,9 @@ openai.api_key = os.getenv("OPENAI_API_KEY") or ""
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
-def get_chat_completion(messages: str, role="user", model="gpt-3.5-turbo") -> str:
+def get_chat_completion(
+    messages: str, role="user", model="gpt-3.5-turbo"
+) -> str:
     try:
         response = openai.ChatCompletion.create(
             model=model,
@@ -38,7 +40,9 @@ def get_chat_completion(messages: str, role="user", model="gpt-3.5-turbo") -> st
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Get chat completion from OpenAI.")
+    parser = argparse.ArgumentParser(
+        description="Get chat completion from OpenAI."
+    )
     parser.add_argument(
         "--input",
         help="Input message to send to the chat model.",
