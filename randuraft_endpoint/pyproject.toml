@@ -31,12 +31,7 @@ profile = "black"
 line_length = 79
 
 [tool.mypy]
-exclude = [
-    "server",
-    "examples",
-    "tests/datastore",
-    "models/database.py",
-]
+exclude = []
 plugins = []
 explicit_package_bases = true
 follow_imports = "silent"
