@@ -18,11 +18,12 @@ if len(not_set) > 0:
     fmt = ", ".join(not_set)
     raise Exception(f"Environment variables not set: {fmt}")
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
+openai.api_key = os.getenv("OPENAI_API_KEY") or ""
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
-def get_chat_completion(messages:str, model="gpt-3.5-turbo") ->str:
+def get_chat_completion(messages: str, model="gpt-3.5-turbo") -> str:
     try:
         response = openai.ChatCompletion.create(
             model=model,
@@ -30,7 +31,6 @@ def get_chat_completion(messages:str, model="gpt-3.5-turbo") ->str:
         )
         choices = response.get("choices", [{}])
         completion = choices[0].get("message", {}).get("content", "").strip()
-        print(f"Completion: {completion}")
         return completion
     except Exception as e:
         print(f"Failed to get chat completion: {e}")
@@ -43,7 +43,7 @@ if __name__ == "__main__":
         "--input",
         help="Input message to send to the chat model.",
         type=str,
-        required=True
+        required=True,
     )
     args = parser.parse_args()
 
