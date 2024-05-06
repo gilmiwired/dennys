@@ -3,9 +3,9 @@ from pydantic import BaseModel
 
 # StreamingResponseとか使うとリアルタイムにいける？
 class ChatRequest(BaseModel):
-    Request: str
+    message: str
     # GPTのバージョンとか指定するのもいける
 
 
 class ChatResponse(BaseModel):
-    Response: str
+    response_message: str
