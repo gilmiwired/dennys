@@ -109,23 +109,6 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('Auth State'),
             ),
-            //ChatPage(エンドポイントとのやり取りテスト部分)
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ChatPage()),
-                );
-              },
-              child: const Text('ChatPage'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-/*
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
@@ -184,4 +167,19 @@ class _HomePageState extends State<HomePage> {
               onPressed: _onButtonPressed,
               child: const Text('Submit Text'),
             ),
-*/
+            //ChatPage(エンドポイントとのやり取りテスト部分)
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ChatPage()),
+                );
+              },
+              child: const Text('ChatPage'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
