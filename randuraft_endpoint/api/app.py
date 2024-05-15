@@ -14,16 +14,16 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 app.include_router(task)
 
-origins = [
-    "http://localhost:3000",
-    "http://localhost:61435",  # FlutterのWebビルドが使用するポート
-    "http://localhost",
-]
+#origins = [
+#    "http://localhost:3000",
+#    "http://localhost:61435",  # FlutterのWebビルドが使用するポート
+#    "http://localhost",
+#]
 
 # CORSの設定
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
