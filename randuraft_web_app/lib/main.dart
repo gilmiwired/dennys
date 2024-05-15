@@ -4,6 +4,7 @@ import 'package:randuraft_web_app/login/login_page.dart';
 //import 'package:randuraft_web_app/register/registration_page.dart';
 import 'package:randuraft_web_app/global_setting/global_tree.dart';
 import 'package:randuraft_web_app/profile/user_data.dart';
+import 'package:randuraft_web_app/chat/chat.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -108,8 +109,7 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('Auth State'),
             ),
-            const SizedBox(height: 20),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
                 // Initialize the GlobalTree
@@ -170,6 +170,16 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               onPressed: _onButtonPressed,
               child: const Text('Submit Text'),
+            ),
+            //ChatPage(エンドポイントとのやり取りテスト部分)
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ChatPage()),
+                );
+              },
+              child: const Text('ChatPage'),
             ),
           ],
         ),
