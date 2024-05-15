@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Firestore Save Data')),
+      appBar: AppBar(title: const Text('Randuraft web app')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -109,6 +109,23 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('Auth State'),
             ),
+            //ChatPage(エンドポイントとのやり取りテスト部分)
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const ChatPage()),
+                );
+              },
+              child: const Text('ChatPage'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+/*
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
@@ -153,8 +170,6 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text('Make coordinates'),
             ),
-
-            // Step 2: Add the TextField to the Column
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: TextField(
@@ -165,25 +180,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-
-            // Step 3: Add the button
             ElevatedButton(
               onPressed: _onButtonPressed,
               child: const Text('Submit Text'),
             ),
-            //ChatPage(エンドポイントとのやり取りテスト部分)
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const ChatPage()),
-                );
-              },
-              child: const Text('ChatPage'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+*/
