@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:randuraft_web_app/common/node_widget.dart';
 import 'package:randuraft_web_app/global_setting/global_tree.dart';
 
 class View_Tree extends StatefulWidget {
+  const View_Tree({super.key});
+
   @override
   _View_Tree createState() => _View_Tree();
 }
@@ -45,7 +46,7 @@ class _View_Tree extends State<View_Tree> {
 
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text('Tree View Example')),
+        appBar: AppBar(title: const Text('Tree View Example')),
         body: TreeView(globalTree: GlobalTree.instance),
       ),
     );
