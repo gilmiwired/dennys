@@ -13,10 +13,11 @@ isort = "^5.13.2"
 tiktoken = "^0.6.0"
 pytest = "^8.2.0"
 python-dotenv = "^1.0.1"
-fastapi = "^0.111.0"
+fastapi = {extras = ["all"], version = "^0.111.0"}
 uvicorn = "^0.29.0"
 pydantic = "^2.7.1"
 openai = "^0.27.5"
+logging = "^0.4.9.6"
 
 
 [build-system]

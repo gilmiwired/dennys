@@ -1,15 +1,24 @@
+import logging
+
 from fastapi import APIRouter
 
 from api.models.task import ChatRequest, ChatResponse
 from services.create_chat import get_chat_completion
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest):
-    response_message = get_chat_completion(request.message)
-    return ChatResponse(response_message=response_message)
+async def chat(request: ChatRequest):
+    logger.info(f"Received message: {request.message}")
+    try:
+        response_message = get_chat_completion(request.message)
+        logger.info(f"Processed message: {response_message}")
+        return ChatResponse(response_message=response_message)
+    except Exception as e:
+        logger.error(f"Error processing message: {e}")
+        raise
 
 
 # 　ここをいじればタスクtreeとタスク生成してみようこんど

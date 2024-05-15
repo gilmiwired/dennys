@@ -22,8 +22,8 @@ class TreePainter extends CustomPainter {
     nodeList.forEach((key, node) {
       // ノードを描画
       //ここフレキシブルに
-      final int nodeWidth = 125;
-      final int nodeHeight = 50;
+      const int nodeWidth = 125;
+      const int nodeHeight = 50;
 
       final rect = Rect.fromPoints(
         Offset(node.x.toDouble() + offsetX,
@@ -37,7 +37,7 @@ class TreePainter extends CustomPainter {
       // ノードのタイトルを描画
       textPainter.text = TextSpan(
         text: node.title,
-        style: TextStyle(color: Colors.black),
+        style: const TextStyle(color: Colors.black),
       );
       textPainter.layout();
       textPainter.paint(
@@ -76,6 +76,8 @@ class TreePainter extends CustomPainter {
 }
 
 class TreePage extends StatelessWidget {
+  const TreePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // 木構造のレイアウトを計算
@@ -83,7 +85,7 @@ class TreePage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Tree Structure'),
+          title: const Text('Tree Structure'),
         ),
         body: CustomPaint(
           painter: TreePainter(GlobalTree.instance.nodeList,
