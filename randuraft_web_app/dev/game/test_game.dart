@@ -3,11 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
-import 'dart:ui';
 import 'package:flame/extensions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
-import 'package:flame/src/extensions/vector2.dart';
 import 'package:randuraft_web_app/game/map_data.dart';
 import 'package:randuraft_web_app/global_setting/global_tree.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,15 +13,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 //import 'dart:math' as math;
 
 class BuildGame extends StatelessWidget {
+  const BuildGame({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomeScreen(),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -158,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Interactive Map Example'),
+        title: const Text('Interactive Map Example'),
       ),
       body: GestureDetector(
         onPanUpdate: game.onPanUpdate,
@@ -246,21 +248,21 @@ class MyGame extends Game {
 
         // Loop through each child and update min and max y values and nodes
         if (node.children != null) {
-          node.children!.forEach((child) {
-            if (minY == null || child.y < minY!) {
+          for (var child in node.children!) {
+            if (minY == null || child.y < minY) {
               minY = child.y;
               minNode = child;
             }
-            if (maxY == null || child.y > maxY!) {
+            if (maxY == null || child.y > maxY) {
               maxY = child.y;
               maxNode = child;
             }
-          });
+          }
         }
 
         // Compute the length in y direction spanned by the children
         if (minY != null && maxY != null) {
-          int yLength = maxY! - minY!;
+          int yLength = maxY - minY;
           debugPrint(
               "yLength spanned by children of node with key $key: $yLength");
           debugPrint(
@@ -289,16 +291,16 @@ class MyGame extends Game {
 
         // Loop through each child and update min and max y values and nodes
         if (node.children != null) {
-          node.children!.forEach((child) {
-            if (minY == null || child.y < minY!) {
+          for (var child in node.children!) {
+            if (minY == null || child.y < minY) {
               minY = child.y;
               minNode = child;
             }
-            if (maxY == null || child.y > maxY!) {
+            if (maxY == null || child.y > maxY) {
               maxY = child.y;
               maxNode = child;
             }
-          });
+          }
         }
         /*
         // Compute the length in y direction spanned by the children
@@ -315,7 +317,7 @@ class MyGame extends Game {
         if (node.rank != myTree.maxRank + 1 && node.countChildren() != 0) {
           //左道
           //done
-          node.children!.forEach((child) {
+          for (var child in node.children!) {
             int xLeftEdge = child.y + 2;
             int yLeftEdge = child.x +
                 myTree.nodeWidth +
@@ -332,7 +334,7 @@ class MyGame extends Game {
                 dynamicMap[xLeftEdge + j][yLeftEdge - i] = vertical[j];
               }
             }
-          });
+          }
           //縦道
           //done
 
@@ -351,7 +353,7 @@ class MyGame extends Game {
               dynamicMap[i].setRange(yMiddleEdge - 3, yMiddleEdge, [22, 15, 8]);
               dynamicMap[i + 1]
                   .setRange(yMiddleEdge - 3, yMiddleEdge, [23, 15, 8]);
-              if (i + 2 < maxNode!.y + 4) {
+              if (i + 2 < maxNode.y + 4) {
                 dynamicMap[i + 2]
                     .setRange(yMiddleEdge - 3, yMiddleEdge, [24, 15, 8]);
                 dynamicMap[i + 3]
