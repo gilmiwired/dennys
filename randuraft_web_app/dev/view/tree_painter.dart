@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:randuraft_web_app/global_setting/global_tree.dart';
-import 'dart:math';
 
 class TreeNodeWidget extends StatelessWidget {
   final Node node;
-  TreeNodeWidget(this.node);
+  const TreeNodeWidget(this.node, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,7 @@ class TreeNodeWidget extends StatelessWidget {
           child: Center(
             child: Text(
               node.title,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -32,7 +31,7 @@ class TreeNodeWidget extends StatelessWidget {
 class TreeEdgeWidget extends StatelessWidget {
   final Node parent;
   final Node child;
-  TreeEdgeWidget(this.parent, this.child);
+  const TreeEdgeWidget(this.parent, this.child, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +53,7 @@ class TreeEdgeWidget extends StatelessWidget {
         },
         child: CustomPaint(
           size: Size(width, height),
-          painter: LinePainter(Offset(0, 0), Offset(width, height)),
+          painter: LinePainter(const Offset(0, 0), Offset(width, height)),
         ),
       ),
     );
@@ -84,6 +83,8 @@ class LinePainter extends CustomPainter {
 }
 
 class TreePage extends StatelessWidget {
+  const TreePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // 木構造のレイアウトを計算
@@ -104,7 +105,7 @@ class TreePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tree Structure'),
+        title: const Text('Tree Structure'),
       ),
       body: Stack(
         children: widgets,
