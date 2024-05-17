@@ -61,9 +61,10 @@ dependencies:
   dart_openai: ^5.0.0
   flutter_dotenv: ^5.1.0
 
-dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dev_dependencies:
   build_runner: ^2.4.8
   freezed:
   # The "flutter_lints" package below contains a set of recommended lints to
