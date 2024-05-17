@@ -25,13 +25,13 @@ jobs:
         working-directory: ./randuraft_web_app
         run: flutter pub get
       - name: Run dart format
-        working-directory: ./randuraft_web_app/lib
+        working-directory: ./randuraft_web_app
         run: dart format --set-exit-if-changed .
       - name: Run dart analyze
-        working-directory: ./randuraft_web_app/lib
+        working-directory: ./randuraft_web_app
         run: dart analyze
       - name: Run flutter analyze
-        working-directory: ./randuraft_web_app/lib
+        working-directory: ./randuraft_web_app
         run: flutter analyze
       
       - name: Load Firebase Secrets
