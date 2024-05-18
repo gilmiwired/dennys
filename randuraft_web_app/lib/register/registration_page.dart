@@ -34,6 +34,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
         scaffoldMessenger.showSnackBar(
           const SnackBar(content: Text('Successfully Registered!')),
         );
+        if (!mounted) return;
+        // /HomePage に移動
+        Navigator.of(context).popUntil((route) => route.isFirst);
       } catch (e) {
         debugPrint("Registration failed with error: $e");
         scaffoldMessenger.showSnackBar(
