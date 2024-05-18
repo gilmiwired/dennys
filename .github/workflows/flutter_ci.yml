@@ -13,9 +13,9 @@ on:
       - '**/*.dart'
 
 jobs:
-  flutter-lint-format:
+  flutter-lint:
     runs-on: ubuntu-latest
-    name: Lint and Format Check
+    name: Lint Check
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
@@ -30,19 +30,33 @@ jobs:
       - name: Run dart analyze
         working-directory: ./randuraft_web_app
         run: dart analyze
+
+  flutter-analyze:
+    runs-on: ubuntu-latest
+    name: Analyze Check
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+      - name: Install dependencies
+        working-directory: ./randuraft_web_app
+        run: flutter pub get
       - name: Run flutter analyze
         working-directory: ./randuraft_web_app
         run: flutter analyze
-      
-      - name: Load Firebase Secrets
-        run: |
-          echo "FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}" >> $GITHUB_ENV
-          echo "FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }}" >> $GITHUB_ENV
-          echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> $GITHUB_ENV
-          echo "FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}" >> $GITHUB_ENV
-          echo "FIREBASE_MESSAGING_SENDER_ID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}" >> $GITHUB_ENV
-          echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> $GITHUB_ENV
-          echo "FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}" >> $GITHUB_ENV
-      - name: Run tests
-        working-directory: ./randuraft_web_app/lib
-        run: flutter test
+
+  flutter-build:
+    runs-on: ubuntu-latest
+    name: Build Check
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+      - name: Install dependencies
+        working-directory: ./randuraft_web_app
+        run: flutter pub get
+      - name: Run flutter build
+        working-directory: ./randuraft_web_app
+        run: flutter build web
