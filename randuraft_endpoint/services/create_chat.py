@@ -33,6 +33,10 @@ def get_chat_completion(
         )
         choices = response.get("choices", [{}])
         completion = choices[0].get("message", {}).get("content", "").strip()
+
+        print(f"Model used: {response.get('model', 'No model info')}")
+        print(f"Token usage details: {response.get('usage', {})}")
+
         return completion
     except Exception as e:
         print(f"Failed to get chat completion: {e}")
