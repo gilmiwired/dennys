@@ -13,9 +13,9 @@ on:
       - '**/*.dart'
 
 jobs:
-  flutter-lint-format:
+  flutter-lint:
     runs-on: ubuntu-latest
-    name: Lint and Format Check
+    name: Lint Check
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
@@ -25,8 +25,38 @@ jobs:
         working-directory: ./randuraft_web_app
         run: flutter pub get
       - name: Run dart format
-        working-directory: ./randuraft_web_app/lib
+        working-directory: ./randuraft_web_app
         run: dart format --set-exit-if-changed .
       - name: Run dart analyze
-        working-directory: ./randuraft_web_app/lib
+        working-directory: ./randuraft_web_app
         run: dart analyze
+
+  flutter-analyze:
+    runs-on: ubuntu-latest
+    name: Analyze Check
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+      - name: Install dependencies
+        working-directory: ./randuraft_web_app
+        run: flutter pub get
+      - name: Run flutter analyze
+        working-directory: ./randuraft_web_app
+        run: flutter analyze
+
+  flutter-build:
+    runs-on: ubuntu-latest
+    name: Build Check
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.9'
+      - name: Install dependencies
+        working-directory: ./randuraft_web_app
+        run: flutter pub get
+      - name: Run flutter build
+        working-directory: ./randuraft_web_app
+        run: flutter build web
