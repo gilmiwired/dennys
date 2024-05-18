@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
                   MaterialPageRoute(builder: (context) => const ChatPage()),
                 );
               },
-              child: const Text('ChatPage'),
+              child: const Text('Chat Page'),
             ),
           ],
         ),
