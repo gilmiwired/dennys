@@ -13,6 +13,9 @@ linter:
   rules:
     library_private_types_in_public_api: false
 
+analyzer:
+  exclude:
+    - dev/**
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
