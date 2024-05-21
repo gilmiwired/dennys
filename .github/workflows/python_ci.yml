@@ -40,13 +40,27 @@ jobs:
               echo "Processing ${dir}..."
               cd "${dir}"
               poetry install --no-root
-              poetry run python -m pip install types-requests
+              echo "Installing formatter..."
+              poetry add black isort
+              echo "Installing linter..."
+              poetry add mypy
+              echo "Installing test runner..."
+              poetry add pytest
               echo "Running formatter..."
               poetry run black --check .
+              poetry run isort --check-only .
               echo "Running linter..."
               poetry run mypy .
+              echo "Running tests..."
+              poetry run pytest --junitxml=pytest-results.xml
               cd ..
             else
               echo "No pyproject.toml found in ${dir}, skipping..."
             fi
           done
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results
+          path: '**/pytest-results.xml'
