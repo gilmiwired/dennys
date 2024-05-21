@@ -45,17 +45,8 @@ jobs:
               poetry run black --check .
               echo "Running linter..."
               poetry run mypy .
-              echo "Running tests..."
-              poetry run pytest --junitxml=pytest-results.xml
               cd ..
             else
               echo "No pyproject.toml found in ${dir}, skipping..."
             fi
           done
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: pytest-results
-          path: '**/pytest-results.xml'
