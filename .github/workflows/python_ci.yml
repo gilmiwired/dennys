@@ -45,6 +45,8 @@ jobs:
               poetry run black --check .
               echo "Running linter..."
               poetry run mypy .
+              echo "Running tests..."
+              poetry run pytest --junitxml=pytest-results.xml
               cd ..
             else
               echo "No pyproject.toml found in ${dir}, skipping..."
