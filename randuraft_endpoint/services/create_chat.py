@@ -2,6 +2,8 @@ import argparse
 import os
 
 import openai
+import requests
+import google.generativeai as genai
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
@@ -9,6 +11,7 @@ load_dotenv()
 
 required_keys = [
     "OPENAI_API_KEY",
+    "GOOGLE_API_KEY",
 ]
 not_set = []
 for key in required_keys:
@@ -20,7 +23,8 @@ if len(not_set) > 0:
 
 
 openai.api_key = os.getenv("OPENAI_API_KEY") or ""
-
+GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY") or ""
+genai.configure(api_key=GOOGLE_API_KEY)
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
 def get_chat_completion(
@@ -43,6 +47,15 @@ def get_chat_completion(
         raise
 
 
+def get_json_response(messages: str) -> dict:
+    for m in genai.list_models():
+        if 'generateContent' in m.supported_generation_methods:
+            print(m.name)
+    model = genai.GenerativeModel('gemini-1.5-pro-latest')
+
+    response = model.generate_content(messages)
+    return response.text
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Get chat completion from OpenAI."
@@ -56,7 +69,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        completion = get_chat_completion(args.input)
+        #completion = get_chat_completion(args.input)
+        
+        prompt = "List 5 popular cookie recipes using this JSON schema: {\"type\": \"object\", \"properties\": { \"recipe_name\": { \"type\": \"string\" }}}"
+        completion = get_json_response(prompt)
         print(f"Generated completion: {completion}")
     except Exception as e:
         print(f"Error: {e}")
