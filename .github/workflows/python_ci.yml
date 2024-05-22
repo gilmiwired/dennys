@@ -46,12 +46,12 @@ jobs:
           set -e
           cd randuraft_endpoint/
           echo "Running formatter..."
-          poetry run black --check .
-          poetry run isort --check-only .
+          poetry run black --check . || (echo "Black formatting issues found"; exit 1)
+          poetry run isort --check-only . || (echo "isort import order issues found"; exit 1)
           echo "Running linter..."
-          poetry run mypy .
+          poetry run mypy . || (echo "Mypy linter issues found"; exit 1)
           echo "Running tests..."
-          poetry run pytest --junitxml=pytest-results.xml
+          poetry run pytest --junitxml=pytest-results.xml || (echo "Tests failed"; exit 1)
 
       - name: Upload test results
         if: always()
