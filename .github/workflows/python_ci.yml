@@ -1,9 +1,11 @@
-name: python CI
+name: randuraft_endpoint CI
 
 on:
   pull_request:
     branches: [main]
-
+    paths:
+      - 'randuraft_endpoint/**/*.py'
+      
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,7 +19,7 @@ jobs:
           path: |
             ~/.cache/pip
             ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          key: ${{ runner.os }}-poetry-${{ hashFiles('randuraft_endpoint/**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-poetry-
 
@@ -35,32 +37,20 @@ jobs:
       - name: Running tests
         run: |
           set -e
-          for dir in */ ; do
-            if [[ -f "${dir}pyproject.toml" ]]; then
-              echo "Processing ${dir}..."
-              cd "${dir}"
-              poetry install --no-root
-              echo "Installing formatter..."
-              poetry add black isort
-              echo "Installing linter..."
-              poetry add mypy
-              echo "Installing test runner..."
-              poetry add pytest
-              echo "Running formatter..."
-              poetry run black --check .
-              poetry run isort --check-only .
-              echo "Running linter..."
-              poetry run mypy .
-              echo "Running tests..."
-              poetry run pytest --junitxml=pytest-results.xml
-              cd ..
-            else
-              echo "No pyproject.toml found in ${dir}, skipping..."
-            fi
-          done
+          echo "Processing randuraft_endpoint/ directory..."
+          cd randuraft_endpoint/
+          poetry install --no-root
+          echo "Running formatter..."
+          poetry run black --check .
+          poetry run isort --check-only .
+          echo "Running linter..."
+          poetry run mypy .
+          echo "Running tests..."
+          poetry run pytest --junitxml=pytest-results.xml
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: pytest-results
-          path: '**/pytest-results.xml'
+          path: 'randuraft_endpoint/**/pytest-results.xml'
