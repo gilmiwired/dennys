@@ -3,12 +3,8 @@ name: randuraft_endpoint CI
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'randuraft_endpoint/'
   push:
     branches: [main]
-    paths:
-      - 'randuraft_endpoint/'
 
 jobs:
   test:
