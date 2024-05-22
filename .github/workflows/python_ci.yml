@@ -5,7 +5,11 @@ on:
     branches: [main]
     paths:
       - 'randuraft_endpoint/**/*.py'
-      
+  push:
+    branches: [main]
+    paths:
+      - 'randuraft_endpoint/**/*.py'
+
 jobs:
   test:
     runs-on: ubuntu-latest
