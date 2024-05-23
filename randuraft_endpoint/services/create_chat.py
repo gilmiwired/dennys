@@ -1,11 +1,10 @@
 import argparse
+import json
 import os
 
-import google.generativeai as genai
+import google.generativeai as genai  # type: ignore
 import openai
-
 import requests
-import json
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
@@ -25,7 +24,7 @@ if len(not_set) > 0:
 
 
 openai.api_key = os.getenv("OPENAI_API_KEY") or ""
-GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY") or ""
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or ""
 genai.configure(api_key=GOOGLE_API_KEY)
 
 
@@ -60,30 +59,68 @@ def get_chat_completion_Gemini(messages: str) -> dict:
     return response.text
 
 
-def get_json_response() -> str:
-    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key={GOOGLE_API_KEY}'
-    headers = {
-        'Content-Type': 'application/json',
-    }
+def get_json_response(messages: str) -> str:
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key={GOOGLE_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+
+    prompt_part = (
+        "You are a task planner. The 'tree' represents the hierarchical structure of tasks where each key is a task ID and its corresponding value is a list of subtask IDs. "
+        "The 'tasks' provides detailed descriptions for each task ID. "
+        "Based on the user's goal, generate a task tree with both 'tree' and 'tasks'. "
+        "If possible, generate at least 10 tasks, making sure that the tasks are MECE and that the level below the tree provides specific actions to guide the user toward the goal. "
+        "Ensure that the information is provided in a single line without any line breaks. Response in Japanese. Exclude all other explanations."
+    )
+    json_schema = (
+        "{ 'type': 'array', 'items': { 'type': 'object', 'properties': { 'id': { 'type': 'integer' }, "
+        "'task': { 'type': 'string' }, 'children': { 'type': 'array', 'items': { 'type': 'object', "
+        "'properties': { 'id': { 'type': 'integer' }, 'task': { 'type': 'string' } }, 'required': ['id', 'task'] } } }, "
+        "'required': ['id', 'task', 'children'] } }"
+    )
+    parts_text = (
+        prompt_part
+        + f"This time {messages} is user's goal."
+        + " You have to use this JSON schema: '"
+        + json_schema
+        + "'"
+    )
 
     data = {
-        "contents": [{
-            "parts": [{"text": "List 5 popular cookie recipes using this JSON schema: { \"type\": \"object\", \"properties\": { \"recipe_name\": { \"type\": \"string\" } } }"}]
-        }],
-        "generationConfig": {
-            "response_mime_type": "application/json",
-        }
+        "contents": [{"parts": [{"text": parts_text}]}],
+        "generationConfig": {"response_mime_type": "application/json"},
     }
-    key = GOOGLE_API_KEY
 
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
-        print(json.dumps(response.json(), indent=2))
-        return response.json()
+        response_data = response.json()
+        os.makedirs("saving", exist_ok=True)
+        filename = "saving/tasks.json"
+        with open(filename, "w", encoding="utf-8") as file:
+            json.dump(response_data, file, indent=2, ensure_ascii=False)
+        print(f"Data saved to {filename}")
+
+        try:
+            text_content = response_data["candidates"][0]["content"]["parts"][
+                0
+            ]["text"]
+
+            tasks = json.loads(text_content)
+
+            formatted_filename = "saving/tasks.json"
+            with open(formatted_filename, "w", encoding="utf-8") as file:
+                json.dump(tasks, file, indent=2, ensure_ascii=False)
+            print(f"Formatted data saved to {formatted_filename}")
+
+        except (KeyError, IndexError, json.JSONDecodeError) as e:
+            print(f"Error processing JSON data: {e}")
+
+        return json.dumps(response_data, indent=2, ensure_ascii=False)
     else:
-        print(f"Failed to retrieve data: {response.status_code}")
-        print(response.text)
-        return None
+        error_message = (
+            f"Failed to retrieve data: {response.status_code}, {response.text}"
+        )
+        print(error_message)
+        return error_message
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -101,7 +138,7 @@ if __name__ == "__main__":
         # completion = get_chat_completion(args.input)
 
         prompt = 'List 5 popular cookie recipes using this JSON schema: {"type": "object", "properties": { "recipe_name": { "type": "string" }}}'
-        completion = get_json_response()
+        completion = get_json_response(args.input)
         print(f"Generated completion: {completion}")
     except Exception as e:
         print(f"Error: {e}")
