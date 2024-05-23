@@ -3,7 +3,6 @@ import os
 
 import google.generativeai as genai
 import openai
-import requests
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
