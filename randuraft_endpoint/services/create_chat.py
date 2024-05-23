@@ -3,6 +3,9 @@ import os
 
 import google.generativeai as genai
 import openai
+
+import requests
+import json
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
 
@@ -22,7 +25,8 @@ if len(not_set) > 0:
 
 
 openai.api_key = os.getenv("OPENAI_API_KEY") or ""
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY") or "")
+GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY") or ""
+genai.configure(api_key=GOOGLE_API_KEY)
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
@@ -46,7 +50,7 @@ def get_chat_completion(
         raise
 
 
-def get_json_response(messages: str) -> dict:
+def get_chat_completion_Gemini(messages: str) -> dict:
     for m in genai.list_models():
         if "generateContent" in m.supported_generation_methods:
             print(m.name)
@@ -55,6 +59,31 @@ def get_json_response(messages: str) -> dict:
     response = model.generate_content(messages)
     return response.text
 
+
+def get_json_response() -> str:
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key={GOOGLE_API_KEY}'
+    headers = {
+        'Content-Type': 'application/json',
+    }
+
+    data = {
+        "contents": [{
+            "parts": [{"text": "List 5 popular cookie recipes using this JSON schema: { \"type\": \"object\", \"properties\": { \"recipe_name\": { \"type\": \"string\" } } }"}]
+        }],
+        "generationConfig": {
+            "response_mime_type": "application/json",
+        }
+    }
+    key = GOOGLE_API_KEY
+
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        print(json.dumps(response.json(), indent=2))
+        return response.json()
+    else:
+        print(f"Failed to retrieve data: {response.status_code}")
+        print(response.text)
+        return None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -72,7 +101,7 @@ if __name__ == "__main__":
         # completion = get_chat_completion(args.input)
 
         prompt = 'List 5 popular cookie recipes using this JSON schema: {"type": "object", "properties": { "recipe_name": { "type": "string" }}}'
-        completion = get_json_response(prompt)
+        completion = get_json_response()
         print(f"Generated completion: {completion}")
     except Exception as e:
         print(f"Error: {e}")
