@@ -39,6 +39,7 @@ line_length = 79
 [tool.mypy]
 exclude = []
 plugins = []
+ignore_missing_imports = true
 explicit_package_bases = true
 follow_imports = "silent"
 warn_redundant_casts = true
