@@ -3,12 +3,8 @@ name: randuraft_endpoint CI
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'randuraft_endpoint/'
   push:
     branches: [main]
-    paths:
-      - 'randuraft_endpoint/'
 
 jobs:
   test:
@@ -38,23 +34,19 @@ jobs:
       - name: Install Poetry
         run: pipx install poetry
 
-      - name: Running tests
+      - name: Install dependencies
         run: |
           set -e
           echo "Processing randuraft_endpoint/ directory..."
           cd randuraft_endpoint/
           poetry install --no-root
-          echo "Running formatter..."
-          poetry run black --check .
-          poetry run isort --check-only .
-          echo "Running linter..."
-          poetry run mypy .
-          echo "Running tests..."
-          poetry run pytest --junitxml=pytest-results.xml
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: pytest-results
-          path: 'randuraft_endpoint/**/pytest-results.xml'
+      - name: Run tests and checks
+        run: |
+          set -e
+          cd randuraft_endpoint/
+          echo "Running formatter..."
+          poetry run black --check --diff . || (echo "Black formatting issues found"; exit 1)
+          poetry run isort --check-only --diff . || (echo "isort import order issues found"; exit 1)
+          echo "Running linter..."
+          poetry run mypy --show-error-codes . || (echo "Mypy linter issues found"; exit 1)
