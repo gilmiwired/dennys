@@ -109,7 +109,7 @@ def create_task_tree(task: str) -> Dict[str, Any]:
         `Dict[str, Any]`: 生成されたタスクツリーの辞書。エラーが発生した場合はエラーメッセージが含まれる辞書。
     """
     model = "gemini-1.5-pro-latest"
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GOOGLE_API_KEY}" # noqa
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GOOGLE_API_KEY}"  # noqa
     headers = {"Content-Type": "application/json"}
 
     prompt_part = (
