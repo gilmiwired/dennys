@@ -22,7 +22,7 @@ google-generativeai = "^0.5.4"
 requests = "^2.32.2"
 types-requests = "^2.32.0.20240523"
 flake8 = "^7.0.0"
-pyproject-flake8 = "^7.0.0"
+flake8-pyproject = "^1.2.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -35,11 +35,16 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-line-length = 120
+line-length = 79
 
 [tool.isort]
 profile = "black"
-line_length = 120
+line_length = 79
+
+[tool.flake8]
+ignore = "D100,D101,D102,D103,D104,D105,D106,D107,D200,D201,D202,D203,D204,D205,D206,D207,D208,D209,D210,D211,D212,D213,D214,D215,D300,D301,D302,D400,D401,D402,D403,D404,D405,D406,D407,D408,D409,D410,D411,D412,D413,D414,D415,D416,D417"
+max-complexity = 10
+max-line-length = 100
 
 [tool.mypy]
 exclude = []
