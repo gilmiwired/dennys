@@ -18,25 +18,33 @@ uvicorn = "^0.29.0"
 pydantic = "^2.7.1"
 openai = "^0.27.5"
 logging = "^0.4.9.6"
+google-generativeai = "^0.5.4"
+requests = "^2.32.2"
+types-requests = "^2.32.0.20240523"
+flake8 = "^7.0.0"
+pyproject-flake8 = "^7.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
+flake8 = "^7.0.0"
+flake8-docstrings = "^1.7.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-line-length = 79
+line-length = 120
 
 [tool.isort]
 profile = "black"
-line_length = 79
+line_length = 120
 
 [tool.mypy]
 exclude = []
 plugins = []
+ignore_missing_imports = true
 explicit_package_bases = true
 follow_imports = "silent"
 warn_redundant_casts = true
