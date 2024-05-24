@@ -50,3 +50,5 @@ jobs:
           poetry run isort --check-only --diff . || (echo "isort import order issues found"; exit 1)
           echo "Running linter..."
           poetry run mypy --show-error-codes . || (echo "Mypy linter issues found"; exit 1)
+          echo "Running flake8..."
+          poetry run flake8 . || (echo "Flake8 style issues found"; exit 1)
