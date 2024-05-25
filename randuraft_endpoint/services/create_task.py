@@ -3,7 +3,7 @@ import json
 import os
 from typing import Any, Dict
 
-import google.generativeai as genai
+import google.generativeai as genai  # type: ignore
 import openai
 import requests
 from dotenv import load_dotenv
@@ -99,6 +99,28 @@ def save_json(data: Dict[str, Any], filename: str) -> None:
     print(f"Data saved to {filename}")
 
 
+def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
+    """
+    'parts' 部分を JSON ファイルとして保存する。
+    Args:
+        `data` (dict): APIからのレスポンスデータ
+        `filename` (str): 保存するファイル名
+    """
+    try:
+        directory = os.path.dirname(filename)
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+
+        parts_text = data["candidates"][0]["content"]["parts"][0]["text"]
+        parts_data = json.loads(parts_text)
+
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(parts_data, f, ensure_ascii=False, indent=2)
+        print(f"Data saved to {filename}")
+    except Exception as e:
+        print(f"Error: {e.__class__.__name__}, {e}")
+
+
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
 def create_task_tree(task: str) -> Dict[str, Any]:
     """
@@ -121,12 +143,18 @@ def create_task_tree(task: str) -> Dict[str, Any]:
         "Ensure that the information is provided in a single line without any line breaks. Response in Japanese. Exclude all other explanations."  # noqa
     )
     json_schema = (
-        "{ 'type': 'array', 'items': { 'type': 'object', 'properties': { 'id': { 'type': 'integer' }, "
-        "'task': { 'type': 'string' }, 'children': { 'type': 'array', 'items': { 'type': 'object', "
-        "'properties': { 'id': { 'type': 'integer' }, 'task': { 'type': 'string' } }, 'required': ['id', 'task'] } } }, "
+        "{ 'type': 'array', 'items': { 'type': 'object', 'properties': { 'id': { 'type': 'integer' }, "# noqa
+        "'task': { 'type': 'string' }, 'children': { 'type': 'array', 'items': { 'type': 'object', "# noqa
+        "'properties': { 'id': { 'type': 'integer' }, 'task': { 'type': 'string' } }, 'required': ['id', 'task'] } } }, "# noqa
         "'required': ['id', 'task', 'children'] } }"
     )
-    parts_text = prompt_part + f"This time {task} is user's goal."+ " You have to use this JSON schema: '" + json_schema + "'"
+    parts_text = (
+        prompt_part
+        + f"This time {task} is user's goal."
+        + " You have to use this JSON schema: '"
+        + json_schema
+        + "'"
+    )
 
     data = {
         "contents": [{"parts": [{"text": parts_text}]}],
@@ -137,7 +165,8 @@ def create_task_tree(task: str) -> Dict[str, Any]:
     if response.status_code == 200:
         response_data = response.json()
         # 必要に応じて
-        # save_json(response_data, "saving/tasks.json")
+        save_json(response_data, "saving/tasks.json")
+        print(json.dumps(response_data, indent=2, ensure_ascii=False))
         return response_data
     else:
         error_message = {
@@ -161,7 +190,6 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-
-        print(f"Generated completion: {completion}")
+        save_parts_to_json(completion, f"saving/{args.input}.json")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error: {e.__class__.__name__}, {e}")
