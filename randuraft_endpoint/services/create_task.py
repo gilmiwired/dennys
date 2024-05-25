@@ -3,7 +3,7 @@ import json
 import os
 from typing import Any, Dict
 
-import google.generativeai as genai  # type: ignore
+import google.generativeai as genai
 import openai
 import requests
 from dotenv import load_dotenv
