@@ -120,8 +120,13 @@ def create_task_tree(task: str) -> Dict[str, Any]:
         "If possible, generate at least 10 tasks, making sure that the tasks are MECE and that the level below the tree provides specific actions to guide the user toward the goal. "  # noqa
         "Ensure that the information is provided in a single line without any line breaks. Response in Japanese. Exclude all other explanations."  # noqa
     )
-
-    parts_text = prompt_part + f"This time {task} is user's goal."
+    json_schema = (
+        "{ 'type': 'array', 'items': { 'type': 'object', 'properties': { 'id': { 'type': 'integer' }, "
+        "'task': { 'type': 'string' }, 'children': { 'type': 'array', 'items': { 'type': 'object', "
+        "'properties': { 'id': { 'type': 'integer' }, 'task': { 'type': 'string' } }, 'required': ['id', 'task'] } } }, "
+        "'required': ['id', 'task', 'children'] } }"
+    )
+    parts_text = prompt_part + f"This time {task} is user's goal."+ " You have to use this JSON schema: '" + json_schema + "'"
 
     data = {
         "contents": [{"parts": [{"text": parts_text}]}],
