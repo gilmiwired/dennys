@@ -143,9 +143,9 @@ def create_task_tree(task: str) -> Dict[str, Any]:
         "Ensure that the information is provided in a single line without any line breaks. Response in Japanese. Exclude all other explanations."  # noqa
     )
     json_schema = (
-        "{ 'type': 'array', 'items': { 'type': 'object', 'properties': { 'id': { 'type': 'integer' }, "# noqa
-        "'task': { 'type': 'string' }, 'children': { 'type': 'array', 'items': { 'type': 'object', "# noqa
-        "'properties': { 'id': { 'type': 'integer' }, 'task': { 'type': 'string' } }, 'required': ['id', 'task'] } } }, "# noqa
+        "{ 'type': 'array', 'items': { 'type': 'object', 'properties': { 'id': { 'type': 'integer' }, "  # noqa
+        "'task': { 'type': 'string' }, 'children': { 'type': 'array', 'items': { 'type': 'object', "  # noqa
+        "'properties': { 'id': { 'type': 'integer' }, 'task': { 'type': 'string' } }, 'required': ['id', 'task'] } } }, "  # noqa
         "'required': ['id', 'task', 'children'] } }"
     )
     parts_text = (
