@@ -69,12 +69,12 @@ class _ChatPageState extends State<ChatPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ...messages.map((msg) => Text(msg)).toList(),
+            ...messages.map((msg) => Text(msg)),
             ListView.builder(
               shrinkWrap:
                   true, // makes the ListView only as big as its children
               physics:
-                  NeverScrollableScrollPhysics(), // since it's inside a SingleChildScrollView
+                  const NeverScrollableScrollPhysics(), // since it's inside a SingleChildScrollView
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 return ListTile(
