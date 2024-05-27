@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter
 
 from api.models.task import ChatRequest, ChatResponse
-from randuraft_endpoint.services.create_task import create_content_using_openai
+from services.create_task import create_content_using_openai
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
