@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:randuraft_web_app/models/task.dart';
 
 const String baseUrl = 'http://127.0.0.1:8000';
 
@@ -38,5 +39,17 @@ Future<String> chat(String message) async {
     return decoded['response_message'];
   } else {
     throw Exception('Failed to get chat response');
+  }
+}
+
+Future<List<Task>> fetchTasks() async {
+  final response = await http.post(Uri.parse('$baseUrl/test/task'),
+      headers: {'Content-Type': 'application/json'});
+
+  if (response.statusCode == 200) {
+    List<dynamic> tasksJson = json.decode(utf8.decode(response.bodyBytes));
+    return tasksJson.map((taskJson) => Task.fromJson(taskJson)).toList();
+  } else {
+    throw Exception('Failed to load tasks');
   }
 }
