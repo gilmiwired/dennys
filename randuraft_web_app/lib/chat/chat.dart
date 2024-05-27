@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:randuraft_web_app/api/api_service.dart';
+import 'package:randuraft_web_app/models/task.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -8,24 +9,39 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  String message = "Loading...";
+  List<Task> tasks = [];
+  final List<String> messages = [];
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     fetchMessageFromApi();
+    fetchTasksFromApi();
   }
 
   Future<void> fetchMessageFromApi() async {
     try {
       final fetchedMessage = await fetchMessage();
       setState(() {
-        message = fetchedMessage;
+        messages.add(fetchedMessage);
       });
     } catch (e) {
       setState(() {
-        message = "Failed to load message";
+        messages.add("Failed to load message");
+      });
+    }
+  }
+
+  Future<void> fetchTasksFromApi() async {
+    try {
+      final fetchedTasks = await fetchTasks();
+      setState(() {
+        tasks = fetchedTasks;
+      });
+    } catch (e) {
+      setState(() {
+        messages.add("Failed to load tasks");
       });
     }
   }
@@ -34,11 +50,11 @@ class _ChatPageState extends State<ChatPage> {
     try {
       final responseMessage = await chat(text);
       setState(() {
-        message = responseMessage;
+        messages.add(responseMessage);
       });
     } catch (e) {
       setState(() {
-        message = "Failed to get chat response";
+        messages.add("Failed to get chat response");
       });
     }
   }
@@ -49,11 +65,24 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: const Text('Flutter to FastAPI'),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(message),
+            ...messages.map((msg) => Text(msg)).toList(),
+            ListView.builder(
+              shrinkWrap:
+                  true, // makes the ListView only as big as its children
+              physics:
+                  NeverScrollableScrollPhysics(), // since it's inside a SingleChildScrollView
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(tasks[index].task),
+                  subtitle: Text('ID: ${tasks[index].id}'),
+                );
+              },
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
@@ -65,10 +94,12 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                sendMessage(_controller.text);
-              },
+              onPressed: () => sendMessage(_controller.text),
               child: const Text('Send Message'),
+            ),
+            ElevatedButton(
+              onPressed: fetchTasksFromApi,
+              child: const Text('Fetch Tasks'),
             ),
           ],
         ),
