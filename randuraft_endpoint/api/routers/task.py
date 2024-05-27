@@ -30,5 +30,5 @@ async def fetch_test_task():
     return TEST_TASK_TREE
 
 
-#  TODO タスクツリー取得用のエンドポイント 
+#  TODO タスクツリー取得用のエンドポイント
 #  from services.create_task import create_task_tree
