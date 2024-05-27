@@ -1,0 +1,39 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "[{\"id\": 1, \"task\": \"ゲームコンセプトの定義\", \"children\": [{\"id\": 11, \"task\": \"ゲームのジャンルを決定する\"}, {\"id\": 12, \"task\": \"ターゲット audience を明確にする\"}, {\"id\": 13, \"task\": \"ゲームのストーリーや設定を考える\"}, {\"id\": 14, \"task\": \"コアとなるゲームプレイを決定する\"}]}, {\"id\": 2, \"task\": \"ゲームデザイン\", \"children\": [{\"id\": 21, \"task\": \"ゲームメカニクスの設計\"}, {\"id\": 22, \"task\": \"レベルデザイン\"}, {\"id\": 23, \"task\": \"キャラクターデザイン\"}, {\"id\": 24, \"task\": \"UI/UXデザイン\"}]}, {\"id\": 3, \"task\": \"技術選定\", \"children\": [{\"id\": 31, \"task\": \"ゲームエンジンを選択する(Unity, Unreal Engineなど)\"}, {\"id\": 32, \"task\": \"プログラミング言語を選択する\"}, {\"id\": 33, \"task\": \"必要なアセット(画像、音楽など)を決定する\"}]}, {\"id\": 4, \"task\": \"開発\", \"children\": [{\"id\": 41, \"task\": \"プロトタイプを作成する\"}, {\"id\": 42, \"task\": \"ゲームの機能を実装する\"}, {\"id\": 43, \"task\": \"テストプレイとデバッグ\"}]}, {\"id\": 5, \"task\": \"リリース\", \"children\": [{\"id\": 51, \"task\": \"ゲームを公開するプラットフォームを選択する\"}, {\"id\": 52, \"task\": \"マーケティングとプロモーション\"}, {\"id\": 53, \"task\": \"ユーザーサポート\"}]}]\n"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0,
+      "safetyRatings": [
+        {
+          "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          "probability": "NEGLIGIBLE"
+        },
+        {
+          "category": "HARM_CATEGORY_HATE_SPEECH",
+          "probability": "NEGLIGIBLE"
+        },
+        {
+          "category": "HARM_CATEGORY_HARASSMENT",
+          "probability": "NEGLIGIBLE"
+        },
+        {
+          "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+          "probability": "NEGLIGIBLE"
+        }
+      ]
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 264,
+    "candidatesTokenCount": 401,
+    "totalTokenCount": 665
+  }
+}

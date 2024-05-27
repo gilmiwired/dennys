@@ -1,9 +1,11 @@
 import logging
+from typing import List
 
 from fastapi import APIRouter
 
-from api.models.task import ChatRequest, ChatResponse
+from api.models.task import ChatRequest, ChatResponse, Task
 from services.create_task import create_content_using_openai
+from services.saving.test_data import TEST_TASK_TREE
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -21,5 +23,12 @@ async def chat(request: ChatRequest):
         raise
 
 
-# 　ここをいじればタスクtreeとタスク生成してみようこんど
-# 　firebaseからの現在のタスクの追加とかもここ
+@router.post("/test/task", response_model=List[Task])
+async def fetch_test_task():
+    logger.info("test-task")
+    logger.info(f"{TEST_TASK_TREE}")
+    return TEST_TASK_TREE
+
+
+#  TODO タスクツリー取得用のエンドポイント
+#  from services.create_task import create_task_tree
