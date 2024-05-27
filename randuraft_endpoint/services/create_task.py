@@ -165,7 +165,7 @@ def create_task_tree(task: str) -> Dict[str, Any]:
     if response.status_code == 200:
         response_data = response.json()
         # 必要に応じて
-        save_json(response_data, "saving/tasks.json")
+        # save_json(response_data, "saving/tasks.json")
         print(json.dumps(response_data, indent=2, ensure_ascii=False))
         return response_data
     else:

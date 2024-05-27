@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -9,3 +11,12 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response_message: str
+
+
+class Task(BaseModel):
+    id: int
+    task: str
+    children: Optional[List["Task"]] = None
+
+
+Task.update_forward_refs()
