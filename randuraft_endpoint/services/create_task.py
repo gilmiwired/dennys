@@ -161,7 +161,11 @@ def create_task_tree(task: str) -> Dict[str, Any]:
         "generationConfig": {"response_mime_type": "application/json"},
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    # response = requests.post(url, headers=headers, json=data) # TODO 戻す
+    with open('saving/tasks.json', 'r', encoding='utf-8') as file:
+        response_data = json.load(file)
+    return response_data
+
     if response.status_code == 200:
         response_data = response.json()
         # 必要に応じて
@@ -190,6 +194,7 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-        save_parts_to_json(completion, f"saving/{args.input}.json")
+        # save_parts_to_json(completion, f"saving/{args.input}.json") # TODO 戻す
+        save_json(completion, 'saving/output.json')
     except Exception as e:
         print(f"Error: {e.__class__.__name__}, {e}")
