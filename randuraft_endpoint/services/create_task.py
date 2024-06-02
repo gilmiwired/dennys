@@ -123,7 +123,7 @@ def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
         print(f"Error: {e.__class__.__name__}, {e}")
 
 
-def parts_to_tasks(parts: Dict[str, Any]) -> List[Task]:
+def dicts_to_tasks(parts: List[Dict[str, Any]]) -> List[Task]:
     """APIレスポンスからList[Task]に変換する
     Args:
         `parts`: APIレスポンスの'parts'部分
@@ -181,7 +181,7 @@ def create_task_tree(task: str) -> List[Task]:
 
         parts_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
         parts_data = json.loads(parts_text)
-        return parts_to_tasks(parts_data)
+        return dicts_to_tasks(parts_data)
 
     if response.status_code == 200:
         response_data = response.json()
@@ -217,6 +217,7 @@ if __name__ == "__main__":
     try:
         completion = create_task_tree(args.input)
         # save_parts_to_json(completion, f"saving/{args.input}.json") # TODO 戻す
-        save_json([task.dict() for task in completion], 'services/saving/output.json')
+        save_json([task.dict() for task in completion],
+                  f'services/saving/{args.input}.json')
     except Exception as e:
         print(f"Error: {e.__class__.__name__}, {e}")
