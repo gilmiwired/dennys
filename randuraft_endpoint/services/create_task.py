@@ -131,7 +131,6 @@ def dicts_to_tasks(parts: List[Dict[str, Any]]) -> List[Task]:
         `List[Task]`: 変換されたTaskのリスト
     """
     tasks = [Task.parse_obj(part) for part in parts]
-    print(tasks)
     return tasks
 
 
@@ -175,13 +174,7 @@ def create_task_tree(task: str) -> List[Task]:
         "generationConfig": {"response_mime_type": "application/json"},
     }
 
-    # response = requests.post(url, headers=headers, json=data) # TODO 戻す
-    with open('services/saving/tasks.json', 'r', encoding='utf-8') as file:
-        response_data = json.load(file)
-
-        parts_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
-        parts_data = json.loads(parts_text)
-        return dicts_to_tasks(parts_data)
+    response = requests.post(url, headers=headers, json=data)  # TODO 戻す
 
     if response.status_code == 200:
         response_data = response.json()
@@ -191,7 +184,8 @@ def create_task_tree(task: str) -> List[Task]:
 
         parts_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
         parts_data = json.loads(parts_text)
-        tasks = parts_to_tasks(parts_data)
+        tasks = dicts_to_tasks(parts_data)
+        print(tasks)
 
         return tasks
     else:
