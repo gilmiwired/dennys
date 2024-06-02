@@ -1,13 +1,15 @@
 import argparse
 import json
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import google.generativeai as genai
 import openai
 import requests
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+
+from api.models.task import Task
 
 load_dotenv()
 
@@ -121,8 +123,20 @@ def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
         print(f"Error: {e.__class__.__name__}, {e}")
 
 
+def parts_to_tasks(parts: Dict[str, Any]) -> List[Task]:
+    """APIレスポンスからList[Task]に変換する
+    Args:
+        `parts`: APIレスポンスの'parts'部分
+    Return:
+        `List[Task]`: 変換されたTaskのリスト
+    """
+    tasks = [Task.parse_obj(part) for part in parts]
+    print(tasks)
+    return tasks
+
+
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
-def create_task_tree(task: str) -> Dict[str, Any]:
+def create_task_tree(task: str) -> List[Task]:
     """
     入力を基にGemini-1.5-proのJson modeを使いタスクツリーを生成。その結果を辞書で返す。
     Args:
@@ -162,16 +176,24 @@ def create_task_tree(task: str) -> Dict[str, Any]:
     }
 
     # response = requests.post(url, headers=headers, json=data) # TODO 戻す
-    with open('saving/tasks.json', 'r', encoding='utf-8') as file:
+    with open('services/saving/tasks.json', 'r', encoding='utf-8') as file:
         response_data = json.load(file)
-    return response_data
+
+        parts_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
+        parts_data = json.loads(parts_text)
+        return parts_to_tasks(parts_data)
 
     if response.status_code == 200:
         response_data = response.json()
         # 必要に応じて
         # save_json(response_data, "saving/tasks.json")
         print(json.dumps(response_data, indent=2, ensure_ascii=False))
-        return response_data
+
+        parts_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
+        parts_data = json.loads(parts_text)
+        tasks = parts_to_tasks(parts_data)
+
+        return tasks
     else:
         error_message = {
             "error": f"Failed to retrieve data: {response.status_code}, {response.text}"
@@ -195,6 +217,6 @@ if __name__ == "__main__":
     try:
         completion = create_task_tree(args.input)
         # save_parts_to_json(completion, f"saving/{args.input}.json") # TODO 戻す
-        save_json(completion, 'saving/output.json')
+        save_json([task.dict() for task in completion], 'services/saving/output.json')
     except Exception as e:
         print(f"Error: {e.__class__.__name__}, {e}")
