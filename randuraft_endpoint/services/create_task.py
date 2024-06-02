@@ -216,7 +216,6 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-        # save_parts_to_json(completion, f"saving/{args.input}.json") # TODO 戻す
         save_json([task.dict() for task in completion],
                   f'services/saving/{args.input}.json')
     except Exception as e:
