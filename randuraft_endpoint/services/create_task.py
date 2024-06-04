@@ -123,6 +123,27 @@ def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
         print(f"Error: {e.__class__.__name__}, {e}")
 
 
+def save_tasks_to_json(data: List[Task], filename: str) -> None:
+    """
+    List[Task]を JSON ファイルとして保存する。
+    Args:
+        `data` (dict): タスクのリスト
+        `filename` (str): 保存するファイル名
+    """
+    try:
+        directory = os.path.dirname(filename)
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+
+        parts_data = [task.model_dump() for task in data]
+
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(parts_data, f, ensure_ascii=False, indent=2)
+        print(f"Data saved to {filename}")
+    except Exception as e:
+        print(f"Error: {e.__class__.__name__}, {e}")
+
+
 def dicts_to_tasks(parts: List[Dict[str, Any]]) -> List[Task]:
     """APIレスポンスからList[Task]に変換する
     Args:
@@ -135,7 +156,7 @@ def dicts_to_tasks(parts: List[Dict[str, Any]]) -> List[Task]:
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
-def create_task_tree(task: str) -> List[Task]:
+def create_task_tree(task: str) -> List[Task] | Dict[str, str]:
     """
     入力を基にGemini-1.5-proのJson modeを使いタスクツリーを生成。その結果を辞書で返す。
     Args:
@@ -212,9 +233,12 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-        save_json(
-            [task.dict() for task in completion],
-            f"services/saving/{args.input}.json",
-        )
+        if type(completion) == list:
+            save_tasks_to_json(
+                completion,
+                f"services/saving/{args.input}.json",
+            )
+        else:
+            print(f"Task Create Error: {completion}")
     except Exception as e:
         print(f"Error: {e.__class__.__name__}, {e}")
