@@ -156,7 +156,7 @@ def dicts_to_tasks(parts: List[Dict[str, Any]]) -> List[Task]:
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
-def create_task_tree(task: str) -> List[Task] | Dict[str, str]:
+def create_task_tree(task: str) -> List[Task]:
     """
     入力を基にGemini-1.5-proのJson modeを使いタスクツリーを生成。その結果を辞書で返す。
     Args:
