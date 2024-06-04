@@ -101,28 +101,6 @@ def save_json(data: Dict[str, Any], filename: str) -> None:
     print(f"Data saved to {filename}")
 
 
-def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
-    """
-    'parts' 部分を JSON ファイルとして保存する。
-    Args:
-        `data` (dict): APIからのレスポンスデータ
-        `filename` (str): 保存するファイル名
-    """
-    try:
-        directory = os.path.dirname(filename)
-        if not os.path.exists(directory):
-            os.makedirs(directory, exist_ok=True)
-
-        parts_text = data["candidates"][0]["content"]["parts"][0]["text"]
-        parts_data = json.loads(parts_text)
-
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(parts_data, f, ensure_ascii=False, indent=2)
-        print(f"Data saved to {filename}")
-    except Exception as e:
-        print(f"Error: {e.__class__.__name__}, {e}")
-
-
 def save_tasks_to_json(data: List[Task], filename: str) -> None:
     """
     List[Task]を JSON ファイルとして保存する。
