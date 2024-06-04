@@ -182,7 +182,9 @@ def create_task_tree(task: str) -> List[Task]:
         # save_json(response_data, "saving/tasks.json")
         print(json.dumps(response_data, indent=2, ensure_ascii=False))
 
-        parts_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
+        parts_text = response_data["candidates"][0]["content"]["parts"][0][
+            "text"
+        ]
         parts_data = json.loads(parts_text)
         tasks = dicts_to_tasks(parts_data)
         print(tasks)
@@ -210,7 +212,9 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-        save_json([task.dict() for task in completion],
-                  f'services/saving/{args.input}.json')
+        save_json(
+            [task.dict() for task in completion],
+            f"services/saving/{args.input}.json",
+        )
     except Exception as e:
         print(f"Error: {e.__class__.__name__}, {e}")
