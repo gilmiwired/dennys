@@ -233,7 +233,7 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-        if type(completion) == list:
+        if type(completion) is list:
             save_tasks_to_json(
                 completion,
                 f"services/saving/{args.input}.json",
