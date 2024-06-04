@@ -11,6 +11,13 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 from api.models.task import Task
 
+
+class ExternalApiError(Exception):
+    """外部APIのリクエストに失敗"""
+
+    pass
+
+
 load_dotenv()
 
 required_keys = [
@@ -190,11 +197,11 @@ def create_task_tree(task: str) -> List[Task]:
 
         return tasks
     else:
-        error_message = {
-            "error": f"Failed to retrieve data: {response.status_code}, {response.text}"
-        }
-        print(error_message)
-        return []
+        message = (
+            f"Failed to retrieve data: {response.status_code}, {response.text}"
+        )
+        print(f"Error: {message}")
+        raise ExternalApiError(message)
 
 
 if __name__ == "__main__":
@@ -211,12 +218,9 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-        if type(completion) is list:
-            save_tasks_to_json(
-                completion,
-                f"services/saving/{args.input}.json",
-            )
-        else:
-            print(f"Task Create Error: {completion}")
+        save_tasks_to_json(
+            completion,
+            f"services/saving/{args.input}.json",
+        )
     except Exception as e:
         print(f"Error: {e.__class__.__name__}, {e}")
