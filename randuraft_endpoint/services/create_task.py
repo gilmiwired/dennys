@@ -151,7 +151,7 @@ def dicts_to_tasks(parts: List[Dict[str, Any]]) -> List[Task]:
     Return:
         `List[Task]`: 変換されたTaskのリスト
     """
-    tasks = [Task.parse_obj(part) for part in parts]
+    tasks = [Task.model_validate(part) for part in parts]
     return tasks
 
 
@@ -195,7 +195,7 @@ def create_task_tree(task: str) -> List[Task]:
         "generationConfig": {"response_mime_type": "application/json"},
     }
 
-    response = requests.post(url, headers=headers, json=data)  # TODO 戻す
+    response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
         response_data = response.json()
@@ -216,7 +216,7 @@ def create_task_tree(task: str) -> List[Task]:
             "error": f"Failed to retrieve data: {response.status_code}, {response.text}"
         }
         print(error_message)
-        return error_message
+        return []
 
 
 if __name__ == "__main__":
