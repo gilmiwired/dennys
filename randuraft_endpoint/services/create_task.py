@@ -197,11 +197,9 @@ def create_task_tree(task: str) -> List[Task]:
 
         return tasks
     else:
-        message = (
+        raise ExternalApiError(
             f"Failed to retrieve data: {response.status_code}, {response.text}"
         )
-        print(f"Error: {message}")
-        raise ExternalApiError(message)
 
 
 if __name__ == "__main__":
