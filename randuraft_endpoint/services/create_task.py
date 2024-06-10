@@ -129,17 +129,6 @@ def save_tasks_to_json(data: List[Task], filename: str) -> None:
         print(f"Error: {e.__class__.__name__}, {e}")
 
 
-def dicts_to_tasks(parts: List[Dict[str, Any]]) -> List[Task]:
-    """APIレスポンスからList[Task]に変換する
-    Args:
-        `parts`: APIレスポンスの'parts'部分
-    Return:
-        `List[Task]`: 変換されたTaskのリスト
-    """
-    tasks = [Task.model_validate(part) for part in parts]
-    return tasks
-
-
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
 def create_task_tree(task: str) -> List[Task]:
     """
@@ -192,7 +181,7 @@ def create_task_tree(task: str) -> List[Task]:
             "text"
         ]
         parts_data = json.loads(parts_text)
-        tasks = dicts_to_tasks(parts_data)
+        tasks = [Task.model_validate(part) for part in parts_data]
         print(tasks)
 
         return tasks
