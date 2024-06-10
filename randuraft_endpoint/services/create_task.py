@@ -1,13 +1,22 @@
 import argparse
 import json
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import google.generativeai as genai
 import openai
 import requests
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_random_exponential
+
+from api.models.task import Task
+
+
+class ExternalApiError(Exception):
+    """外部APIのリクエストに失敗"""
+
+    pass
+
 
 load_dotenv()
 
@@ -99,11 +108,11 @@ def save_json(data: Dict[str, Any], filename: str) -> None:
     print(f"Data saved to {filename}")
 
 
-def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
+def save_tasks_to_json(data: List[Task], filename: str) -> None:
     """
-    'parts' 部分を JSON ファイルとして保存する。
+    List[Task]を JSON ファイルとして保存する。
     Args:
-        `data` (dict): APIからのレスポンスデータ
+        `data` (dict): タスクのリスト
         `filename` (str): 保存するファイル名
     """
     try:
@@ -111,8 +120,7 @@ def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
         if not os.path.exists(directory):
             os.makedirs(directory, exist_ok=True)
 
-        parts_text = data["candidates"][0]["content"]["parts"][0]["text"]
-        parts_data = json.loads(parts_text)
+        parts_data = [task.model_dump() for task in data]
 
         with open(filename, "w", encoding="utf-8") as f:
             json.dump(parts_data, f, ensure_ascii=False, indent=2)
@@ -122,7 +130,7 @@ def save_parts_to_json(data: Dict[str, Any], filename: str) -> None:
 
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
-def create_task_tree(task: str) -> Dict[str, Any]:
+def create_task_tree(task: str) -> List[Task]:
     """
     入力を基にGemini-1.5-proのJson modeを使いタスクツリーを生成。その結果を辞書で返す。
     Args:
@@ -162,18 +170,25 @@ def create_task_tree(task: str) -> Dict[str, Any]:
     }
 
     response = requests.post(url, headers=headers, json=data)
+
     if response.status_code == 200:
         response_data = response.json()
         # 必要に応じて
         # save_json(response_data, "saving/tasks.json")
         print(json.dumps(response_data, indent=2, ensure_ascii=False))
-        return response_data
+
+        parts_text = response_data["candidates"][0]["content"]["parts"][0][
+            "text"
+        ]
+        parts_data = json.loads(parts_text)
+        tasks = [Task.model_validate(part) for part in parts_data]
+        print(tasks)
+
+        return tasks
     else:
-        error_message = {
-            "error": f"Failed to retrieve data: {response.status_code}, {response.text}"
-        }
-        print(error_message)
-        return error_message
+        raise ExternalApiError(
+            f"Failed to retrieve data: {response.status_code}, {response.text}"
+        )
 
 
 if __name__ == "__main__":
@@ -190,6 +205,9 @@ if __name__ == "__main__":
 
     try:
         completion = create_task_tree(args.input)
-        save_parts_to_json(completion, f"saving/{args.input}.json")
+        save_tasks_to_json(
+            completion,
+            f"services/saving/{args.input}.json",
+        )
     except Exception as e:
         print(f"Error: {e.__class__.__name__}, {e}")
